@@ -1,20 +1,43 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {float, Card, CardWrapper, UserCard } from 'react-ui-cards';
 import {characters} from './characters.js';
 import {iTavernGame} from './Game.js';
 import {Cards} from './Cards.js'
 import { isContentEditable } from '@testing-library/user-event/dist/utils/index.js';
 
+import Loading from 'react-loading';
+
 export function TavernBoard(props) {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    // Replace this with the actual logic to check if iTavernGame is loaded
+    const checkIfGameIsLoaded = () => {
+      const gameIsLoaded = Object.keys(props.G.handValidity).length > 0;
+      setIsLoaded(gameIsLoaded);
+    };
+  
+    checkIfGameIsLoaded();
+  }, [props.G]);
+
+
   return (
     <div>
-      <Header {...props} />
-      {props.ctx.phase === "characterSelection" && <CharacterSelector {...props} />}
-      {props.ctx.phase !== "characterSelection" && <StatusCards {...props} />}
-      {props.ctx.phase !== "characterSelection" && <Hand {...props} />}
+      {!isLoaded ? (
+        <Loading type={"bars"} color={"#000000"} />
+      ) : (
+        <>
+          <Header {...props} />
+          {props.ctx.phase === "characterSelection" && <CharacterSelector {...props} />}
+          {props.ctx.phase !== "characterSelection" && <StatusCards {...props} />}
+          {props.ctx.phase !== "characterSelection" && <Hand {...props} />}
+        </>
+      )}
     </div>
   );
 }
+
+
 
 
 function Header({ctx, playerID}) {
@@ -87,7 +110,7 @@ function DisplayCard({cardId, playerID, G, index}) {
 }
 
 
-function CharacterSelector({moves}) {
+const CharacterSelector = (props) => {
   useEffect(() => {
     console.log('CharacterSelector rendered');
   });
@@ -98,7 +121,7 @@ function CharacterSelector({moves}) {
       <ul>
         {characters.map((character, index) => (
           <li key={index}>
-            <button onClick={() => moves.chooseCharacter(index)}>
+            <button onClick={() => props.moves.chooseCharacter(index)}>
               {character.shortName}
             </button>
           </li>
@@ -107,6 +130,7 @@ function CharacterSelector({moves}) {
     </div>
   );
 }
+export default React.memo(CharacterSelector);
 
 function isNotNullOrUndefined(value) {
   return value !== null && value !== undefined;

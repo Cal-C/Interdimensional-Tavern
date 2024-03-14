@@ -226,7 +226,7 @@ function checkValidMove({G, ctx}, playerChecked, cardChecked) {
 function checkIfAllCharactersSelected({G, ctx}) {
     console.log(JSON.stringify(G.characterID));
     let players = Object.keys(G.characterID);
-    let playersWithCharacters = players.filter(player => G.characterID[player] !== "" && G.characterID[player] !== undefined && G.characterID[player] !== null);
+    let playersWithCharacters = players.filter(player => G.characterID[player]);
     console.log("Players with characters: " + playersWithCharacters.length + " Total players: " + ctx.numPlayers);
     return playersWithCharacters.length === ctx.numPlayers;
 }
@@ -267,10 +267,6 @@ function playCard(G, playerID, cardIndex, target = null) {
         console.log("Card not found");
         return INVALID_MOVE;
     }
-    if(G.cash[playerID] < cardPlayed.cashEffect) {
-        console.log("Not enough cash to play card");
-        return INVALID_MOVE;
-    }
 
     if(cardPlayed.playType === "Heal") {
         
@@ -281,7 +277,9 @@ function playCard(G, playerID, cardIndex, target = null) {
 
     }
 
-    G.cash[playerID] -= cardPlayed.cashCost;
+    if(cardPlayed.cashCost) {
+        G.cash[playerID] -= cardPlayed.cashCost;
+    }
 }
 
 function pass({G, playerID, ctx, events}) {
