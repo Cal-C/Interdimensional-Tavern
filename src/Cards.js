@@ -4,7 +4,7 @@ export const Cards = [
         name : "Nut Tap",
         description : "Taps the chosen opponent in the nuts, dealing 2 damage to health.",
         playType : "SingleTargetAttack", //type is an internal identifier for the card, used to determine what code to run when the card is played
-        whenPlayable : ["Action"], //whenPlayable is an array of strings that represent the phases in which the card can be played
+        whenPlayable : ["Action"], //whenPlayable is an array of strings that represent the phases in which the card can be played, it will usually just be one thing
         heathEffect : -2,
     },
     {

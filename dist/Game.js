@@ -87,7 +87,8 @@ const iTavernGame = exports.iTavernGame = {
         onBegin: _ref4 => {
           let {
             G,
-            ctx
+            ctx,
+            events
           } = _ref4;
           console.log(JSON.stringify(ctx));
           console.log("Starting main phase with " + ctx.numPlayers + " players.");
@@ -95,9 +96,9 @@ const iTavernGame = exports.iTavernGame = {
             G,
             ctx
           });
-          checkAllValidMoves({
-            G,
-            ctx
+          events.setActivePlayers({
+            currentPlayer: 'Discard',
+            others: 'React'
           });
         },
         onEnd: (G, ctx) => {
@@ -116,6 +117,20 @@ const iTavernGame = exports.iTavernGame = {
       console.log("Ending turn for player " + ctx.currentPlayer);
     },
     stages: {
+      React: {
+        moves: {
+          playCard,
+          pass
+        },
+        next: "React",
+        onBegin: (G, ctx) => {
+          checkAllValidMoves({
+            G,
+            ctx
+          });
+          console.log("Starting react stage");
+        }
+      },
       Discard: {
         moves: {
           discard,
@@ -244,6 +259,10 @@ function chooseCharacter(_ref5, characterId) {
       G,
       ctx
     });
+    checkAllValidMoves({
+      G,
+      ctx
+    });
     events.endPhase();
     return;
   }
@@ -291,7 +310,11 @@ function checkValidMove(_ref8, playerChecked, cardChecked) {
     console.log("Card not found");
     return valid;
   }
-  if (card.whenPlayable.includes("Action")) {}
+  if (card.whenPlayable.includes("Action")) {
+    if (ctx.currentPlayer === playerChecked && ctx.stage === "Action") {
+      valid = true;
+    }
+  }
   if (card.whenPlayable.includes("Whenever")) {
     valid = true;
   }

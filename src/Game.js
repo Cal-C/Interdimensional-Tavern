@@ -3,6 +3,7 @@ import { ActivePlayers, GameMethod, INVALID_MOVE, PlayerView, Stage, TurnOrder }
 import { Cards } from './Cards.js';
 
 
+
 export const iTavernGame = {
     setup: ({ctx}) => ({ 
         //testing variables
@@ -67,11 +68,11 @@ export const iTavernGame = {
             next: "End",
             turn: {
                 order: TurnOrder.DEFAULT,
-                onBegin: ({G, ctx}) => {
+                onBegin: ({G, ctx, events}) => {
                     console.log(JSON.stringify(ctx))
                     console.log("Starting main phase with " + ctx.numPlayers + " players.");
                     allPlayersDrawToMaxHand({G, ctx});
-                    checkAllValidMoves({G, ctx});
+                    events.setActivePlayers({ currentPlayer: 'Discard', others: 'React' });
                     
                 },
                 onEnd: (G, ctx) => {
@@ -91,6 +92,14 @@ export const iTavernGame = {
             console.log("Ending turn for player " + ctx.currentPlayer);
         },
         stages: {
+            React:{
+                moves: {playCard, pass},
+                next: "React",
+                onBegin: (G, ctx) => {
+                    checkAllValidMoves({G, ctx});
+                    console.log("Starting react stage");
+                },
+            },
             Discard: {
                 moves: {discard, pass, playCard},
                 
@@ -179,6 +188,7 @@ function chooseCharacter({G, playerID, ctx, events }, characterId ) {
         console.log("All players have selected characters");
         //move to main phase
         allPlayersDrawToMaxHand({G, ctx});
+        checkAllValidMoves({G, ctx});
         events.endPhase();
         return; 
     }
@@ -213,7 +223,9 @@ function checkValidMove({G, ctx}, playerChecked, cardChecked) {
         return valid;
     }
     if(card.whenPlayable.includes("Action")) {
-
+        if(ctx.currentPlayer === playerChecked && ctx.stage === "Action") {
+            valid = true;
+        }
     }
     if(card.whenPlayable.includes("Whenever")){
         valid = true;
