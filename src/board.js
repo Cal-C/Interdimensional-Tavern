@@ -3,7 +3,6 @@ import {float, Card, CardWrapper, UserCard } from 'react-ui-cards';
 import {characters} from './characters.js';
 import {iTavernGame} from './Game.js';
 import {Cards} from './Cards.js'
-import { isContentEditable } from '@testing-library/user-event/dist/utils/index.js';
 
 import Loading from 'react-loading';
 
@@ -45,6 +44,7 @@ function Header({ctx, playerID}) {
     <div>
       <h1>Board for player {playerID}</h1>
       <h2>Phase: {ctx.phase}, Turn for Player: {ctx.currentPlayer}</h2>
+      {ctx.activePlayers && playerID in ctx.activePlayers && <h2>My Phase: {ctx.activePlayers[playerID]}</h2>}
     </div>
   );
 }
@@ -83,7 +83,7 @@ function StatusCards({ G, ctx }) {
 }
 
 
-function Hand({G, moves, playerID}) {
+function Hand({G, ctx, moves, playerID}) {
   return (
     <div>
       <h1>Your hand</h1>
@@ -92,7 +92,7 @@ function Hand({G, moves, playerID}) {
           <DisplayCard key={index} cardId={cardId} playerID={playerID} G={G} index={index} />
         ))}
       </div>
-      <button onClick={() => moves.drawToMaxHand()}>Draw To Max</button>
+      {ctx.activePlayers[playerID] === "Draw" && <button onClick={() => moves.drawToMaxHand()}>Draw To Max</button>}
     </div>
   );
 }

@@ -71,7 +71,6 @@ export const iTavernGame = {
                 onBegin: ({G, ctx, events}) => {
                     console.log(JSON.stringify(ctx))
                     console.log("Starting main phase with " + ctx.numPlayers + " players.");
-                    allPlayersDrawToMaxHand({G, ctx});
                     events.setActivePlayers({ currentPlayer: 'Discard', others: 'React' });
                     
                 },

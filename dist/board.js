@@ -8,9 +8,7 @@ exports.default = void 0;
 var _react = _interopRequireWildcard(require("react"));
 var _reactUiCards = require("react-ui-cards");
 var _characters = require("./characters.js");
-var _Game = require("./Game.js");
 var _Cards = require("./Cards.js");
-var _index = require("@testing-library/user-event/dist/utils/index.js");
 var _reactLoading = _interopRequireDefault(require("react-loading"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
@@ -35,7 +33,7 @@ function Header(_ref) {
     ctx,
     playerID
   } = _ref;
-  return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("h1", null, "Board for player ", playerID), /*#__PURE__*/_react.default.createElement("h2", null, "Phase: ", ctx.phase, ", Turn for Player: ", ctx.currentPlayer));
+  return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("h1", null, "Board for player ", playerID), /*#__PURE__*/_react.default.createElement("h2", null, "Phase: ", ctx.phase, ", Turn for Player: ", ctx.currentPlayer, ", My Phase: ", ctx.activePlayers[playerID]));
 }
 function StatusCards(_ref2) {
   let {
@@ -78,6 +76,7 @@ function StatusCards(_ref2) {
 function Hand(_ref3) {
   let {
     G,
+    ctx,
     moves,
     playerID
   } = _ref3;
@@ -93,7 +92,7 @@ function Hand(_ref3) {
     playerID: playerID,
     G: G,
     index: index
-  }))), /*#__PURE__*/_react.default.createElement("button", {
+  }))), ctx.activePlayers[playerID] === "Draw" && /*#__PURE__*/_react.default.createElement("button", {
     onClick: () => moves.drawToMaxHand()
   }, "Draw To Max"));
 }
