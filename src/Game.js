@@ -188,13 +188,13 @@ function chooseCharacter({G, playerID, ctx, events }, characterId ) {
 
 
 function checkAllValidMoves({G, ctx}) {
-    console.time("Time taken");
+    console.time("Validity check time taken");
     let players = Object.keys(G.hand);
     players = players.filter(player => G.characterID[player] !== "" && G.characterID[player] !== undefined && G.characterID[player] !== null);
     players.forEach(player => {
         checkPlayerValidMoves({G, ctx}, player);
     });
-    console.timeEnd("Time taken");
+    console.timeEnd("Validity check time taken");
 }
 
 function checkPlayerValidMoves({G, ctx}, playerChecked) {
@@ -215,6 +215,16 @@ function checkValidMove({G, ctx}, playerChecked, cardChecked) {
     if(card.whenPlayable.includes("Action")) {
 
     }
+    if(card.whenPlayable.includes("Whenever")){
+        valid = true;
+    }
+
+    if(card.cashEffect !== null && card.cashEffect !== undefined){
+        if(G.cash[playerChecked] + card.cashEffect <= 0){
+            valid = false;
+        }
+
+    }
     console.log("Card " + cardChecked + " is valid: " + valid);
     G.handValidity[playerChecked][cardChecked] = valid;
     return valid;
@@ -226,7 +236,7 @@ function checkValidMove({G, ctx}, playerChecked, cardChecked) {
 function checkIfAllCharactersSelected({G, ctx}) {
     console.log(JSON.stringify(G.characterID));
     let players = Object.keys(G.characterID);
-    let playersWithCharacters = players.filter(player => G.characterID[player]);
+    let playersWithCharacters = players.filter(player => (G.characterID[player] !== "" && G.characterID[player] !== undefined && G.characterID[player] !== null));
     console.log("Players with characters: " + playersWithCharacters.length + " Total players: " + ctx.numPlayers);
     return playersWithCharacters.length === ctx.numPlayers;
 }

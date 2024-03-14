@@ -28,7 +28,7 @@ export const Cards = [
         name : "Witch's Hangover Cure",
         description : "Gorath can pay 1 cash to remove 1 drunkenness whenever.",
         playType : "Heal",
-        whenPlayable : ["Any"],
+        whenPlayable : ["Whenever"],
         cashEffect : -1,
         drunkennessEffect : -1,
     }
