@@ -1,23 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { Client } from 'boardgame.io/react';
+import { iTavernGame } from './Game.js';
+import { Local } from 'boardgame.io/multiplayer';
+import {TavernBoard} from './board.js';
+//import { Card, CardWrapper } from 'react-ui-cards';
+
+// Define your game rules
+
+
+// Create a client
+const GameClient = Client({ 
+  game: iTavernGame,
+  multiplayer: Local(),
+  board: TavernBoard,
+});
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Interdimensional Tavern</h1>
+      <GameClient playerID='0' />
+      <GameClient playerID='1' />
+      <GameClient playerID='2' />
+      <GameClient playerID='3' />
+      
     </div>
   );
 }
