@@ -20,6 +20,9 @@ const iTavernGame = exports.iTavernGame = {
       //global variables
       initialized: false,
       drinkDeck: [],
+      stack: [],
+      //ids of cards to be played, allows players to counter each other's cards before resolution
+
       //not determined by characters, put personal to each player
       hand: {},
       handValidity: {},

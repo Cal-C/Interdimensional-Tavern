@@ -4,6 +4,8 @@ import {characters} from './characters.js';
 import {iTavernGame} from './Game.js';
 import {Cards} from './Cards.js'
 
+import { PersonalDeckCard } from './CustomCards.js';
+
 import Loading from 'react-loading';
 
 export function TavernBoard(props) {
@@ -89,7 +91,7 @@ function Hand({G, ctx, moves, playerID}) {
       <h1>Your hand</h1>
       <div style={{ display: 'flex', justifyContent: 'left', flexWrap: 'wrap' }}>
         {Array.isArray(G.hand[playerID]) && G.hand[playerID].map((cardId, index) => (
-          <DisplayCard key={index} cardId={cardId} playerID={playerID} G={G} index={index} />
+          <DisplayCardinHand key={index} cardId={cardId} playerID={playerID} G={G} index={index} />
         ))}
       </div>
       {ctx.activePlayers[playerID] === "Draw" && <button onClick={() => moves.drawToMaxHand()}>Draw To Max</button>}
@@ -97,14 +99,36 @@ function Hand({G, ctx, moves, playerID}) {
   );
 }
 
-function DisplayCard({cardId, playerID, G, index}) {
+function DisplayCardinHand({cardId, playerID, G, index}) {
   const card = Cards.find(card => card.id === cardId);
+  const isValid = G.handValidity[playerID][index];
+  const cardColor = isValid ? '#76CC76' : '#D75265'; // replace 'green' and 'red' with actual color codes
+  const playableEmoji = isValid ? '✅' : '❌';
   return (
+    /*
     <UserCard
     float
     name={card.name}
-    positionName={card.description + ' '+ G.handValidity[playerID][index]}
-    style={{ height: '500px' }}
+    positionName={card.description}
+    style={{ height: '550px',  color: cardColor }}
+    stats = {[
+      {name: 'Playable', value: playableEmoji + " " + camelToSpaced(card.whenPlayable.join(", "))}
+
+    ]}
+    />
+    */
+    <PersonalDeckCard
+    float
+    name={card.name}
+    description={card.description}
+    style={{ backgroundColor : cardColor }}
+    stats = {[
+      {name: 'Playable', value: playableEmoji + " " + camelToSpaced(card.whenPlayable.join(", "))},
+      {name: 'Health Effect', value: card.heathEffect},
+      {name: 'Drunkenness Effect', value: card.drunkennessEffect},
+      {name: 'Cash Effect', value: card.cashEffect}
+
+    ]}
     />
   );
 }
@@ -134,4 +158,10 @@ export default React.memo(CharacterSelector);
 
 function isNotNullOrUndefined(value) {
   return value !== null && value !== undefined;
+}
+
+function camelToSpaced(str) {
+  return str
+    .replace(/([A-Z])/g, ' $1') // insert a space before all found uppercase letters
+    .trim(); // remove the leading space
 }

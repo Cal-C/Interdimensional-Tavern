@@ -10,10 +10,11 @@ export const Cards = [
     {
         id: "G2",
         name : "Get Iced",
-        description : "Engages a chosen opponent in an ancient tradition of hiding a Smirnoff Ice and forcing them to drink it, dealing 2 damage to drunkenness.",
+        description : "Surprises the chosen opponent with a Smirnoff Ice, dealing 1 damage to health and 2 drunkenness.", //in the image he is hitting another player with the bottle
         playType : "SingleTargetAttack", 
         whenPlayable : ["Action"],
         drunkennessEffect : 2,
+        heathEffect : -1,
     },
     {
         id: "G3",
@@ -26,7 +27,7 @@ export const Cards = [
     {
         id: "G4",
         name : "Witch's Hangover Cure",
-        description : "Gorath can pay 1 cash to remove 1 drunkenness whenever.",
+        description : "Gorath can pay 1 cash to remove 1 drunkenness.",
         playType : "Heal",
         whenPlayable : ["Whenever"],
         cashEffect : -1,
