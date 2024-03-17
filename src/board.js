@@ -121,13 +121,10 @@ function DisplayCardinHand({cardId, playerID, G, index}) {
     float
     name={card.name}
     description={card.description}
-    style={{ backgroundColor : cardColor }}
+    style={{ liftColor : cardColor }}
     stats = {[
       {name: 'Playable', value: playableEmoji + " " + camelToSpaced(card.whenPlayable.join(", "))},
-      {name: 'Health Effect', value: card.heathEffect},
-      {name: 'Drunkenness Effect', value: card.drunkennessEffect},
-      {name: 'Cash Effect', value: card.cashEffect}
-
+      {name: 'Type', value: camelToSpaced(card.playType)},
     ]}
     />
   );
