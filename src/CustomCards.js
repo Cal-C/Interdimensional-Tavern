@@ -2,19 +2,14 @@ import React from "react";
 import { Textfit } from "react-textfit";
 
 import imageDefault from "./images/tonychris.jpg";
+import './CustomCards.css';
 
-const CardBox = ({ children, style }) => {
+const CardBox = ({ children, style, hoverColor }) => {
   return (
-    <div
-      style={{
-        color: "black",
-        wordWrap: "break-word",
-        borderRadius: "10px",
-        padding: "5px",
-        margin: "5px",
-        ...style,
-      }}
-    >
+    <div className="cardBox" style={{
+      ...style,
+      '--hover-color': hoverColor,
+    }}>
       {children}
     </div>
   );
@@ -30,8 +25,9 @@ const PersonalDeckCard = (props) => {
     style = { height: "500px", width: "250px", minHeight: "500px", minWidth: "250px" }, // default values for height and width
   } = props;
 
+  const hoverColor = colorFromPlayable(props);
   return (
-    <CardBox style={style}>
+    <CardBox style={style} hoverColor={hoverColor}>
       <div
         style={{
           display: "flex",
@@ -130,5 +126,14 @@ const PersonalDeckCard = (props) => {
     </CardBox>
   );
 };
+
+function colorFromPlayable(props) {
+  const playableString = props.stats.find(stat => stat.name === "Playable").value;
+  if (playableString.includes("✅")) {
+    return "green";
+  } else {
+    return "red";
+  }
+}
 
 export { PersonalDeckCard };
