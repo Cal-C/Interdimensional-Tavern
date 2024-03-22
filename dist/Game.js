@@ -331,7 +331,8 @@ function chooseCharacter(_ref10, characterId) {
     console.log("All players have selected characters");
     //move to main phase
     allPlayersDrawToMaxHand({
-      G
+      G,
+      ctx
     });
     checkAllValidMoves({
       G,
@@ -416,23 +417,25 @@ function checkIfAllCharactersSelected(_ref14) {
 }
 function allPlayersDrawToMaxHand(_ref15) {
   let {
-    G
+    G,
+    ctx
   } = _ref15;
   console.log("All players drawing to max hand " + JSON.stringify(G.characterID));
   let players = Object.keys(G.characterID);
   players.forEach(player => {
     let playerNumber = parseInt(player);
-    drawToMaxHandInternal(G, playerNumber);
+    drawToMaxHandInternal(G, ctx, playerNumber);
   });
 }
 function drawToMaxHand(_ref16) {
   let {
     G,
+    ctx,
     playerID
   } = _ref16;
-  drawToMaxHandInternal(G, playerID);
+  drawToMaxHandInternal(G, ctx, playerID);
 }
-function drawToMaxHandInternal(G, playerID) {
+function drawToMaxHandInternal(G, ctx, playerID) {
   if (!G) {
     console.error('G is undefined');
     return;
@@ -463,6 +466,11 @@ function drawToMaxHandInternal(G, playerID) {
     G.hand[playerID].push(newCard);
     console.log("Drew card " + newCard + " for player " + playerID);
   }
+  console.log("Player " + playerID + " has drawn to max hand");
+  checkPlayerValidMoves({
+    G,
+    ctx
+  }, playerID);
 }
 function playCard(G, playerID, cardIndex) {
   let target = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
