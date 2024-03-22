@@ -37,6 +37,6 @@ function App() {
     onClick: () => setSelectedPlayerID('3')
   }, "Select Player 3")) : /*#__PURE__*/_react.default.createElement(GameClient, {
     playerID: selectedPlayerID
-  }));
+  }), /*#__PURE__*/_react.default.createElement("br", null), /*#__PURE__*/_react.default.createElement("small", null, " trashcan art by Ilham Fitrotul Hayat"));
 }
 var _default = exports.default = App;

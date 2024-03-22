@@ -28,6 +28,8 @@ const iTavernGame = exports.iTavernGame = {
       handValidity: {},
       consumeDeck: {},
       discardDeck: {},
+      discarding: {},
+      discardingHand: {},
       //determined by characters
       characterID: {},
       characterShortName: {},
@@ -43,7 +45,10 @@ const iTavernGame = exports.iTavernGame = {
   },
   moves: {
     chooseCharacter,
-    drawToMaxHand
+    drawToMaxHand,
+    startDiscarding,
+    stopDiscarding,
+    toggleDiscarding
   },
   phases: {
     characterSelection: {
@@ -79,11 +84,6 @@ const iTavernGame = exports.iTavernGame = {
     },
     Main: {
       start: false,
-      moves: {
-        discard,
-        playCard,
-        pass
-      },
       next: "End",
       turn: {
         order: _core.TurnOrder.DEFAULT,
@@ -133,6 +133,9 @@ const iTavernGame = exports.iTavernGame = {
       Discard: {
         moves: {
           discard,
+          startDiscarding,
+          stopDiscarding,
+          toggleDiscarding,
           pass,
           playCard
         },
@@ -217,13 +220,34 @@ const iTavernGame = exports.iTavernGame = {
     }
   }
 };
-function chooseCharacter(_ref5, characterId) {
+function startDiscarding(_ref5) {
+  let {
+    G,
+    ctx
+  } = _ref5;
+  G.discarding[ctx.currentPlayer] = true;
+}
+function stopDiscarding(_ref6) {
+  let {
+    G,
+    ctx
+  } = _ref6;
+  G.discarding[ctx.currentPlayer] = false;
+}
+function toggleDiscarding(_ref7, cardIndex, playerID) {
+  let {
+    G,
+    ctx
+  } = _ref7;
+  G.discardingHand[playerID][cardIndex] = !G.discardingHand[playerID][cardIndex];
+}
+function chooseCharacter(_ref8, characterId) {
   let {
     G,
     playerID,
     ctx,
     events
-  } = _ref5;
+  } = _ref8;
   if (G.characterID[playerID] !== "" && G.characterID[playerID] !== undefined && G.characterID[playerID] !== null) {
     console.log("Player " + playerID + " has already selected a character");
     return;
@@ -268,11 +292,11 @@ function chooseCharacter(_ref5, characterId) {
   console.log("Not all players have selected characters");
   events.endTurn();
 }
-function checkAllValidMoves(_ref6) {
+function checkAllValidMoves(_ref9) {
   let {
     G,
     ctx
-  } = _ref6;
+  } = _ref9;
   console.time("Validity check time taken");
   let players = Object.keys(G.hand);
   players = players.filter(player => G.characterID[player] !== "" && G.characterID[player] !== undefined && G.characterID[player] !== null);
@@ -284,11 +308,11 @@ function checkAllValidMoves(_ref6) {
   });
   console.timeEnd("Validity check time taken");
 }
-function checkPlayerValidMoves(_ref7, playerChecked) {
+function checkPlayerValidMoves(_ref10, playerChecked) {
   let {
     G,
     ctx
-  } = _ref7;
+  } = _ref10;
   let cardIndex = 0;
   G.hand[playerChecked].forEach(card => {
     checkValidMove({
@@ -298,11 +322,11 @@ function checkPlayerValidMoves(_ref7, playerChecked) {
     cardIndex++;
   });
 }
-function checkValidMove(_ref8, playerChecked, cardChecked) {
+function checkValidMove(_ref11, playerChecked, cardChecked) {
   let {
     G,
     ctx
-  } = _ref8;
+  } = _ref11;
   let valid = false;
   let card = _Cards.Cards.find(card => card.id === G.hand[playerChecked][cardChecked]);
   if (card === undefined) {
@@ -326,22 +350,22 @@ function checkValidMove(_ref8, playerChecked, cardChecked) {
   G.handValidity[playerChecked][cardChecked] = valid;
   return valid;
 }
-function checkIfAllCharactersSelected(_ref9) {
+function checkIfAllCharactersSelected(_ref12) {
   let {
     G,
     ctx
-  } = _ref9;
+  } = _ref12;
   console.log(JSON.stringify(G.characterID));
   let players = Object.keys(G.characterID);
   let playersWithCharacters = players.filter(player => G.characterID[player] !== "" && G.characterID[player] !== undefined && G.characterID[player] !== null);
   console.log("Players with characters: " + playersWithCharacters.length + " Total players: " + ctx.numPlayers);
   return playersWithCharacters.length === ctx.numPlayers;
 }
-function allPlayersDrawToMaxHand(_ref10) {
+function allPlayersDrawToMaxHand(_ref13) {
   let {
     G,
     ctx
-  } = _ref10;
+  } = _ref13;
   console.log("All players drawing to max hand " + JSON.stringify(G.characterID));
   let players = Object.keys(G.characterID);
   players.forEach(player => {
@@ -383,24 +407,24 @@ function playCard(G, playerID, cardIndex) {
     G.cash[playerID] -= cardPlayed.cashCost;
   }
 }
-function pass(_ref11) {
+function pass(_ref14) {
   let {
     G,
     playerID,
     ctx,
     events
-  } = _ref11;
+  } = _ref14;
   if (ctx.phase === "End") {
     events.endTurn();
   }
   events.endPhase();
   return;
 }
-function setupVariables(_ref12) {
+function setupVariables(_ref15) {
   let {
     G,
     ctx
-  } = _ref12;
+  } = _ref15;
   for (let i = 0; i < ctx.numPlayers; i++) {
     G.characterID[i] = "";
     G.characterShortName[i] = "";
@@ -416,12 +440,14 @@ function setupVariables(_ref12) {
     G.handValidity[i] = Array(G.maxHandSize).fill(false);
     G.consumeDeck[i] = [];
     G.discardDeck[i] = [];
+    G.discarding[i] = false;
+    G.discardingHand[i] = Array(G.maxHandSize).fill(false);
   }
 }
-function consume(_ref13, consumingPlayer) {
+function consume(_ref16, consumingPlayer) {
   let {
     G
-  } = _ref13;
+  } = _ref16;
   let consumedCards = [];
   consumedCards.push(G.consumeDeck[consumingPlayer].pop());
 }

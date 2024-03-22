@@ -2,14 +2,18 @@ import React from "react";
 import { Textfit } from "react-textfit";
 
 import imageDefault from "./images/tonychris.jpg";
+import trashcanImage from "./images/trashcan.png";
+
 import './CustomCards.css';
 
-const CardBox = ({ children, style, hoverColor }) => {
+const CardBox = ({ children, style, hoverColor, onClick }) => {
   return (
     <div className="cardBox" style={{
       ...style,
       '--hover-color': hoverColor,
-    }}>
+    }}
+    onClick={onClick}
+    >
       {children}
     </div>
   );
@@ -21,13 +25,41 @@ const PersonalDeckCard = (props) => {
     playerID,
     description,
     stats,
+    index,
     image = imageDefault,
     style = { height: "500px", width: "250px", minHeight: "500px", minWidth: "250px" }, // default values for height and width
+    trashing = false,
   } = props;
+
+  const handleClick = () => {
+    if (props.G.discarding[props.playerID]) {
+      props.moves.toggleDiscarding(index, playerID); // replace 'moveNameWhenDiscarding' with the name of your move
+    } else {
+      props.moves.playCard(index,playerID); // replace 'moveNameWhenNotDiscarding' with the name of your move
+    }
+  };
 
   const hoverColor = colorFromPlayable(props);
   return (
-    <CardBox style={style} hoverColor={hoverColor}>
+    <CardBox style={{...style, position: "relative"}} hoverColor={hoverColor}  onClick={handleClick}>
+        {trashing && (
+  <img 
+    src={trashcanImage} 
+    alt="Trashcan" 
+    style={{
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      width: '100%',
+      height: '100%',
+      objectFit: 'contain',
+      margin: 'auto',
+      opacity: 0.8,
+    }}
+  />
+)}
       <div
         style={{
           display: "flex",

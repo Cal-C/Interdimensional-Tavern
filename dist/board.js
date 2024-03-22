@@ -35,7 +35,7 @@ function Header(_ref) {
     ctx,
     playerID
   } = _ref;
-  return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("h1", null, "Board for player ", playerID), /*#__PURE__*/_react.default.createElement("h2", null, "Phase: ", ctx.phase, ", Turn for Player: ", ctx.currentPlayer), ctx.activePlayers && playerID in ctx.activePlayers && /*#__PURE__*/_react.default.createElement("h2", null, "My Phase: ", ctx.activePlayers[playerID]));
+  return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("h1", null, "Board for player ", playerID), /*#__PURE__*/_react.default.createElement("h2", null, "Phase: ", ctx.phase, ", Turn for Player: ", ctx.currentPlayer), ctx.activePlayers && playerID in ctx.activePlayers && /*#__PURE__*/_react.default.createElement("h2", null, "My Stage: ", ctx.activePlayers[playerID]));
 }
 function StatusCards(_ref2) {
   let {
@@ -82,7 +82,22 @@ function Hand(_ref3) {
     moves,
     playerID
   } = _ref3;
-  return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("h1", null, "Your hand"), /*#__PURE__*/_react.default.createElement("div", {
+  return /*#__PURE__*/_react.default.createElement("div", {
+    style: {
+      backgroundColor: "#D2b48c",
+      border: "10px double black"
+    }
+  }, /*#__PURE__*/_react.default.createElement("div", {
+    style: {
+      display: 'flex',
+      alignItems: 'center'
+    }
+  }, /*#__PURE__*/_react.default.createElement(PhaseButtons, {
+    G: G,
+    ctx: ctx,
+    moves: moves,
+    playerID: playerID
+  }), /*#__PURE__*/_react.default.createElement("h1", null, "Your hand")), /*#__PURE__*/_react.default.createElement("div", {
     style: {
       display: 'flex',
       justifyContent: 'left',
@@ -93,51 +108,66 @@ function Hand(_ref3) {
     cardId: cardId,
     playerID: playerID,
     G: G,
-    index: index
+    index: index,
+    moves: moves
   }))), ctx.activePlayers[playerID] === "Draw" && /*#__PURE__*/_react.default.createElement("button", {
     onClick: () => moves.drawToMaxHand()
   }, "Draw To Max"));
 }
-function DisplayCardinHand(_ref4) {
+function PhaseButtons(_ref4) {
+  let {
+    G,
+    ctx,
+    moves,
+    playerID
+  } = _ref4;
+  return /*#__PURE__*/_react.default.createElement("div", {
+    style: {
+      display: 'flex',
+      alignItems: 'center'
+    }
+  }, /*#__PURE__*/_react.default.createElement("h1", {
+    style: {
+      marginRight: '10px'
+    }
+  }, "Stage Buttons"), ctx.activePlayers[playerID] === "Discard" && G.discarding[playerID] === false && /*#__PURE__*/_react.default.createElement("button", {
+    onClick: () => moves.startDiscarding()
+  }, "Start Discarding"), ctx.activePlayers[playerID] === "Discard" && G.discarding[playerID] === true && /*#__PURE__*/_react.default.createElement("button", {
+    onClick: () => moves.stopDiscarding()
+  }, "Stop Discarding"));
+}
+function DisplayCardinHand(_ref5) {
   let {
     cardId,
     playerID,
     G,
-    index
-  } = _ref4;
+    index,
+    moves
+  } = _ref5;
   const card = _Cards.Cards.find(card => card.id === cardId);
   const isValid = G.handValidity[playerID][index];
   const cardColor = isValid ? '#76CC76' : '#D75265'; // replace 'green' and 'red' with actual color codes
   const playableEmoji = isValid ? '✅' : '❌';
-  return (
-    /*#__PURE__*/
-    /*
-    <UserCard
-    float
-    name={card.name}
-    positionName={card.description}
-    style={{ height: '550px',  color: cardColor }}
-    stats = {[
-      {name: 'Playable', value: playableEmoji + " " + camelToSpaced(card.whenPlayable.join(", "))}
-      ]}
-    />
-    */
-    _react.default.createElement(_CustomCards.PersonalDeckCard, {
-      float: true,
-      name: card.name,
-      description: card.description,
-      style: {
-        liftColor: cardColor
-      },
-      stats: [{
-        name: 'Playable',
-        value: playableEmoji + " " + camelToSpaced(card.whenPlayable.join(", "))
-      }, {
-        name: 'Type',
-        value: camelToSpaced(card.playType)
-      }]
-    })
-  );
+  return /*#__PURE__*/_react.default.createElement(_CustomCards.PersonalDeckCard, {
+    float: true,
+    name: card.name,
+    description: card.description,
+    style: {
+      liftColor: cardColor
+    },
+    stats: [{
+      name: 'Playable',
+      value: playableEmoji + " " + camelToSpaced(card.whenPlayable.join(", "))
+    }, {
+      name: 'Type',
+      value: camelToSpaced(card.playType)
+    }],
+    trashing: G.discardingHand[playerID][index],
+    moves: moves,
+    index: index,
+    playerID: playerID,
+    G: G
+  });
 }
 const CharacterSelector = props => {
   (0, _react.useEffect)(() => {

@@ -46,7 +46,7 @@ function Header({ctx, playerID}) {
     <div>
       <h1>Board for player {playerID}</h1>
       <h2>Phase: {ctx.phase}, Turn for Player: {ctx.currentPlayer}</h2>
-      {ctx.activePlayers && playerID in ctx.activePlayers && <h2>My Phase: {ctx.activePlayers[playerID]}</h2>}
+      {ctx.activePlayers && playerID in ctx.activePlayers && <h2>My Stage: {ctx.activePlayers[playerID]}</h2>}
     </div>
   );
 }
@@ -87,11 +87,14 @@ function StatusCards({ G, ctx }) {
 
 function Hand({G, ctx, moves, playerID}) {
   return (
-    <div>
-      <h1>Your hand</h1>
+    <div style= {{backgroundColor: "#D2b48c" , border: "10px double black"}}>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <PhaseButtons G={G} ctx={ctx} moves={moves} playerID={playerID} />
+        <h1>Your hand</h1>
+      </div>
       <div style={{ display: 'flex', justifyContent: 'left', flexWrap: 'wrap' }}>
         {Array.isArray(G.hand[playerID]) && G.hand[playerID].map((cardId, index) => (
-          <DisplayCardinHand key={index} cardId={cardId} playerID={playerID} G={G} index={index} />
+          <DisplayCardinHand key={index} cardId={cardId} playerID={playerID} G={G} index={index} moves = {moves} />
         ))}
       </div>
       {ctx.activePlayers[playerID] === "Draw" && <button onClick={() => moves.drawToMaxHand()}>Draw To Max</button>}
@@ -99,24 +102,26 @@ function Hand({G, ctx, moves, playerID}) {
   );
 }
 
-function DisplayCardinHand({cardId, playerID, G, index}) {
+function PhaseButtons({G, ctx, moves, playerID}) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      <h1 style={{ marginRight: '10px' }}>Stage Buttons</h1>
+      {ctx.activePlayers[playerID] === "Discard" && G.discarding[playerID] === false &&
+      <button onClick={() => moves.startDiscarding()}>Start Discarding</button>
+      }
+      {ctx.activePlayers[playerID] === "Discard" && G.discarding[playerID] === true &&
+      <button onClick={() => moves.stopDiscarding()}>Stop Discarding</button>
+      }
+    </div>
+  );
+}
+
+function DisplayCardinHand({cardId, playerID, G, index, moves}) {
   const card = Cards.find(card => card.id === cardId);
   const isValid = G.handValidity[playerID][index];
   const cardColor = isValid ? '#76CC76' : '#D75265'; // replace 'green' and 'red' with actual color codes
   const playableEmoji = isValid ? '✅' : '❌';
   return (
-    /*
-    <UserCard
-    float
-    name={card.name}
-    positionName={card.description}
-    style={{ height: '550px',  color: cardColor }}
-    stats = {[
-      {name: 'Playable', value: playableEmoji + " " + camelToSpaced(card.whenPlayable.join(", "))}
-
-    ]}
-    />
-    */
     <PersonalDeckCard
     float
     name={card.name}
@@ -126,6 +131,11 @@ function DisplayCardinHand({cardId, playerID, G, index}) {
       {name: 'Playable', value: playableEmoji + " " + camelToSpaced(card.whenPlayable.join(", "))},
       {name: 'Type', value: camelToSpaced(card.playType)},
     ]}
+    trashing = {G.discardingHand[playerID][index]}
+    moves = {moves}
+    index = {index}
+    playerID = {playerID}
+    G = {G}
     />
   );
 }

@@ -31,6 +31,8 @@ function App() {
       ) : (
         <GameClient playerID={selectedPlayerID} />
       )}
+      <br />
+      <small> trashcan art by Ilham Fitrotul Hayat</small>
     </div>
   );
 }

@@ -22,6 +22,8 @@ export const iTavernGame = {
         handValidity: {},
         consumeDeck: {},
         discardDeck: {},
+        discarding: {},
+        discardingHand: {},
         
 
         //determined by characters
@@ -41,7 +43,10 @@ export const iTavernGame = {
         
     moves: {
         chooseCharacter,
-        drawToMaxHand,    
+        drawToMaxHand,
+        startDiscarding,
+        stopDiscarding,
+        toggleDiscarding,    
     },
 
     phases:{
@@ -65,7 +70,6 @@ export const iTavernGame = {
         },
         Main: {
             start: false,
-            moves: {discard, playCard, pass},
             next: "End",
             turn: {
                 order: TurnOrder.DEFAULT,
@@ -101,7 +105,7 @@ export const iTavernGame = {
                 },
             },
             Discard: {
-                moves: {discard, pass, playCard},
+                moves: {discard, startDiscarding, stopDiscarding, toggleDiscarding, pass, playCard},
                 
                 next: "Draw",
                 onBegin: (G, ctx) => {
@@ -154,6 +158,17 @@ export const iTavernGame = {
 
 }
 
+function startDiscarding({G, ctx}) {
+    G.discarding[ctx.currentPlayer] = true;
+}
+
+function stopDiscarding({G, ctx}) {
+    G.discarding[ctx.currentPlayer] = false;
+}
+
+function toggleDiscarding({G, ctx}, cardIndex, playerID) {
+    G.discardingHand[playerID][cardIndex] = !G.discardingHand[playerID][cardIndex];
+}
 
 
   
@@ -329,6 +344,8 @@ function setupVariables({G, ctx}){
         G.handValidity[i] =  Array(G.maxHandSize).fill(false);
         G.consumeDeck[i] = [];
         G.discardDeck[i] = [];
+        G.discarding[i] = false;
+        G.discardingHand[i] = Array(G.maxHandSize).fill(false);
     }
 }
 

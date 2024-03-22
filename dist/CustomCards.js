@@ -7,20 +7,20 @@ exports.PersonalDeckCard = void 0;
 var _react = _interopRequireDefault(require("react"));
 var _reactTextfit = require("react-textfit");
 var _tonychris = _interopRequireDefault(require("./images/tonychris.jpg"));
+var _trashcan = _interopRequireDefault(require("./images/trashcan.png"));
+require("./CustomCards.css");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 const CardBox = _ref => {
   let {
     children,
-    style
+    style,
+    hoverColor
   } = _ref;
   return /*#__PURE__*/_react.default.createElement("div", {
+    className: "cardBox",
     style: {
-      color: "black",
-      wordWrap: "break-word",
-      borderRadius: "10px",
-      padding: "5px",
-      margin: "5px",
-      ...style
+      ...style,
+      '--hover-color': hoverColor
     }
   }, children);
 };
@@ -30,17 +30,49 @@ const PersonalDeckCard = props => {
     playerID,
     description,
     stats,
+    index,
     image = _tonychris.default,
     style = {
       height: "500px",
       width: "250px",
       minHeight: "500px",
       minWidth: "250px"
-    } // default values for height and width
+    },
+    // default values for height and width
+    trashing = false
   } = props;
+  const handleClick = () => {
+    if (props.G.discarding[props.playerID]) {
+      console.log("Discarding" + index);
+      props.moves.toggleDiscarding(index, playerID); // replace 'moveNameWhenDiscarding' with the name of your move
+    } else {
+      props.moves.playCard(index, playerID); // replace 'moveNameWhenNotDiscarding' with the name of your move
+    }
+  };
+  const hoverColor = colorFromPlayable(props);
   return /*#__PURE__*/_react.default.createElement(CardBox, {
-    style: style
-  }, /*#__PURE__*/_react.default.createElement("div", {
+    style: {
+      ...style,
+      position: "relative"
+    },
+    hoverColor: hoverColor,
+    onClick: handleClick
+  }, trashing && /*#__PURE__*/_react.default.createElement("img", {
+    src: _trashcan.default,
+    alt: "Trashcan",
+    style: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      width: '100%',
+      height: '100%',
+      objectFit: 'contain',
+      margin: 'auto',
+      opacity: 0.8
+    }
+  }), /*#__PURE__*/_react.default.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -127,3 +159,11 @@ const PersonalDeckCard = props => {
   }, stat.value && stat.value)))))))));
 };
 exports.PersonalDeckCard = PersonalDeckCard;
+function colorFromPlayable(props) {
+  const playableString = props.stats.find(stat => stat.name === "Playable").value;
+  if (playableString.includes("✅")) {
+    return "green";
+  } else {
+    return "red";
+  }
+}
