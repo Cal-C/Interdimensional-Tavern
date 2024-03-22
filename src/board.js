@@ -97,7 +97,6 @@ function Hand({G, ctx, moves, playerID}) {
           <DisplayCardinHand key={index} cardId={cardId} playerID={playerID} G={G} index={index} moves = {moves} />
         ))}
       </div>
-      {ctx.activePlayers[playerID] === "Draw" && <button onClick={() => moves.drawToMaxHand()}>Draw To Max</button>}
     </div>
   );
 }
@@ -110,8 +109,19 @@ function PhaseButtons({G, ctx, moves, playerID}) {
       <button onClick={() => moves.startDiscarding()}>Start Discarding</button>
       }
       {ctx.activePlayers[playerID] === "Discard" && G.discarding[playerID] === true &&
-      <button onClick={() => moves.stopDiscarding()}>Stop Discarding</button>
+      <>
+        <button onClick={() => moves.stopDiscarding()}>Stop Discarding</button> 
+        <button onClick={() => moves.discardSelection(playerID)}>Discard and Move to Draw Stage</button>
+      </>
       }
+      {ctx.activePlayers[playerID] === "React" &&
+      <>
+        <button onClick={() => moves.pass()}>Pass React Stage</button>
+      </>}
+      {ctx.activePlayers[playerID] === "Draw" &&
+      <>
+        <button onClick={() => moves.drawToMaxHand()}>Draw to Max</button>
+      </>}
     </div>
   );
 }

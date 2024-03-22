@@ -46,7 +46,12 @@ export const iTavernGame = {
         drawToMaxHand,
         startDiscarding,
         stopDiscarding,
-        toggleDiscarding,    
+        toggleDiscarding,
+        discard,
+        playCard,
+        pass,
+        consume,
+        discardSelection,    
     },
 
     phases:{
@@ -105,7 +110,7 @@ export const iTavernGame = {
                 },
             },
             Discard: {
-                moves: {discard, startDiscarding, stopDiscarding, toggleDiscarding, pass, playCard},
+                moves: {discardSelection, startDiscarding, stopDiscarding, toggleDiscarding, pass, playCard},
                 
                 next: "Draw",
                 onBegin: (G, ctx) => {
@@ -158,12 +163,48 @@ export const iTavernGame = {
 
 }
 
+function discardSelection({G, events, moves, ctx}, playID) {
+    console.log("Discarding selection for player " + playID);
+    for(let i = G.discardingHand[playID].length; i >= 0; i--) {
+        if(G.discardingHand[playID][i]) {
+            discard({G}, i, playID);
+        }
+    }
+    stopDiscardingInternal(G, ctx);
+    events.setActivePlayers({ currentPlayer: 'Draw', others: 'React' });
+}
+
+function discard({G}, i, playID) {
+    console.log("Discarding card " + i + " for player " + playID);
+    if (!G.hand[playID]) {
+        console.log("Player " + playID + " has no hand");
+        return;
+    }
+    if (!G.hand[playID][i]) {
+        console.log("Player " + playID + " has no card at index " + i);
+        return;
+    }
+    let card = G.hand[playID].splice(i, 1)[0];
+    console.log("Discarding card " + card + " for player " + playID);
+    //check if card has discard effect and do it
+    G.discardDeck[playID].push(card);
+    G.discardingHand[playID][i] = false;
+}
+
 function startDiscarding({G, ctx}) {
     G.discarding[ctx.currentPlayer] = true;
 }
 
 function stopDiscarding({G, ctx}) {
+   stopDiscardingInternal(G, ctx);
+}
+
+function stopDiscardingInternal(G, ctx) {
     G.discarding[ctx.currentPlayer] = false;
+    G.discardingHand = {
+        ...G.discardingHand,
+        [ctx.currentPlayer]: Array(G.maxHandSize).fill(false),
+     };
 }
 
 function toggleDiscarding({G, ctx}, cardIndex, playerID) {
@@ -202,7 +243,7 @@ function chooseCharacter({G, playerID, ctx, events }, characterId ) {
     if(checkIfAllCharactersSelected({G, ctx})){
         console.log("All players have selected characters");
         //move to main phase
-        allPlayersDrawToMaxHand({G, ctx});
+        allPlayersDrawToMaxHand({G});
         checkAllValidMoves({G, ctx});
         events.endPhase();
         return; 
@@ -224,10 +265,12 @@ function checkAllValidMoves({G, ctx}) {
 
 function checkPlayerValidMoves({G, ctx}, playerChecked) {
     let cardIndex = 0;
-    G.hand[playerChecked].forEach(card => {
-        checkValidMove({G, ctx}, playerChecked, cardIndex);
-        cardIndex++;
-    }); 
+    if (G.hand[playerChecked]) {
+        G.hand[playerChecked].forEach(card => {
+            checkValidMove({G, ctx}, playerChecked, cardIndex);
+            cardIndex++;
+        }); 
+    }
 }
 
 function checkValidMove({G, ctx}, playerChecked, cardChecked) {
@@ -268,15 +311,36 @@ function checkIfAllCharactersSelected({G, ctx}) {
     return playersWithCharacters.length === ctx.numPlayers;
 }
 
-function allPlayersDrawToMaxHand({G, ctx}) {
+function allPlayersDrawToMaxHand({G}) {
     console.log("All players drawing to max hand " + JSON.stringify(G.characterID));
     let players = Object.keys(G.characterID);
     players.forEach(player => {
-        drawToMaxHand(G, ctx, player);
+        let playerNumber = parseInt(player);
+        drawToMaxHandInternal(G, playerNumber);
     });
 }
 
-function drawToMaxHand (G, ctx, playerID) {
+function drawToMaxHand({G, playerID}) {
+    drawToMaxHandInternal(G, playerID);
+}
+
+function drawToMaxHandInternal (G, playerID) {
+    if (!G) {
+        console.error('G is undefined');
+        return;
+    }
+    if (!G.hand) {
+        console.error('G.hand is undefined');
+        //return;
+    }
+    if (!G.personalDeck) {
+        console.error('G.personalDeck is undefined');
+        return;
+    }
+    if (!G.hand[playerID]) {
+        console.error(`G.hand[${playerID}] is undefined`);
+        return;
+    }
     console.log("Drawing to max hand for player " + playerID);
     while (G.hand[playerID].length < G.maxHandSize) {
         if (!Array.isArray(G.personalDeck[playerID])) {
@@ -291,10 +355,6 @@ function drawToMaxHand (G, ctx, playerID) {
         G.hand[playerID].push(newCard);
         console.log("Drew card " + newCard + " for player " + playerID);
     }
-}
-
-function discard(G, playerID, cardIndex) {
-    G.discardDeck[playerID].push(G.hand[playerID].splice(cardIndex, 1));
 }
 
 function playCard(G, playerID, cardIndex, target = null) {
@@ -323,7 +383,7 @@ function pass({G, playerID, ctx, events}) {
     if(ctx.phase === "End"){
         events.endTurn();
     }
-    events.endPhase();
+    events.endStage();
     return;
 }
 

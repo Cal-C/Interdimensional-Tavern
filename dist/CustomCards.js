@@ -14,14 +14,16 @@ const CardBox = _ref => {
   let {
     children,
     style,
-    hoverColor
+    hoverColor,
+    onClick
   } = _ref;
   return /*#__PURE__*/_react.default.createElement("div", {
     className: "cardBox",
     style: {
       ...style,
       '--hover-color': hoverColor
-    }
+    },
+    onClick: onClick
   }, children);
 };
 const PersonalDeckCard = props => {
@@ -43,7 +45,6 @@ const PersonalDeckCard = props => {
   } = props;
   const handleClick = () => {
     if (props.G.discarding[props.playerID]) {
-      console.log("Discarding" + index);
       props.moves.toggleDiscarding(index, playerID); // replace 'moveNameWhenDiscarding' with the name of your move
     } else {
       props.moves.playCard(index, playerID); // replace 'moveNameWhenNotDiscarding' with the name of your move

@@ -110,9 +110,7 @@ function Hand(_ref3) {
     G: G,
     index: index,
     moves: moves
-  }))), ctx.activePlayers[playerID] === "Draw" && /*#__PURE__*/_react.default.createElement("button", {
-    onClick: () => moves.drawToMaxHand()
-  }, "Draw To Max"));
+  }))));
 }
 function PhaseButtons(_ref4) {
   let {
@@ -132,9 +130,15 @@ function PhaseButtons(_ref4) {
     }
   }, "Stage Buttons"), ctx.activePlayers[playerID] === "Discard" && G.discarding[playerID] === false && /*#__PURE__*/_react.default.createElement("button", {
     onClick: () => moves.startDiscarding()
-  }, "Start Discarding"), ctx.activePlayers[playerID] === "Discard" && G.discarding[playerID] === true && /*#__PURE__*/_react.default.createElement("button", {
+  }, "Start Discarding"), ctx.activePlayers[playerID] === "Discard" && G.discarding[playerID] === true && /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement("button", {
     onClick: () => moves.stopDiscarding()
-  }, "Stop Discarding"));
+  }, "Stop Discarding"), /*#__PURE__*/_react.default.createElement("button", {
+    onClick: () => moves.discardSelection(playerID)
+  }, "Discard and Move to Draw Stage")), ctx.activePlayers[playerID] === "React" && /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement("button", {
+    onClick: () => moves.pass()
+  }, "Pass React Stage")), ctx.activePlayers[playerID] === "Draw" && /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement("button", {
+    onClick: () => moves.drawToMaxHand()
+  }, "Draw to Max")));
 }
 function DisplayCardinHand(_ref5) {
   let {
