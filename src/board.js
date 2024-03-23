@@ -70,23 +70,29 @@ function StatusCards({ G, ctx }) {
           key={i}
           name={G.characterLongName[i]}
           stats={[
-            { name: 'Name', value: G.characterLongName[i] },
+            { name: 'Name', value: G.characterShortName[i] },
             { name: 'Cash', value: G.cash[i] },
           ]}
           health={G.health[i]}
           maxHealth={G.maxHealth[i]}
           drunkenness={G.drunkenness[i]}
           minDrunkenness={G.minDrunkenness[i]}
-          liftColor={characters[G.characterID[i]].liftColor}
+          liftColor={characters[G.characterID[i]].Colors[1]}
           G={G}
           ctx={ctx}
+          Colors = {characters[G.characterID[i]].Colors}
+          style={{ height: "300px", width: "450px", minHeight: "300px", minWidth: "450px" }}
         />
       );
     }
   }
 
   console.log('statusCards:', statusCards);
-  return statusCards;
+  return (
+    <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+      {statusCards}
+    </div>
+  );
 }
 
 function Stack({G, moves, playerID}){

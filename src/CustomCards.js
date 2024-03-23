@@ -22,66 +22,121 @@ const CardBox = ({ children, style, hoverColor, onClick }) => {
 const StatusCard = (props) => {
   const {
     image = imageDefault,
-    stats = [{'Name': 'Character Name', 'Cash': 69}],
+    stats = [{ Name: "Character Name", Cash: 69 }],
     health = 69,
     maxHealth = 69,
     drunkenness = -69,
     minDrunkenness = -69,
     liftColor = "#540a27",
-    style = { height: "300px", width: "450px", minHeight: "300px", minWidth: "450px" },
-    G ,
-    ctx ,
+    style = {
+      height: "300px",
+      width: "450px",
+      minHeight: "300px",
+      minWidth: "450px",
+    },
+    G,
+    ctx,
+    Colors,
   } = props;
 
   const onClick = () => {
-    console.log("StatusCard "+ stats.Name +" clicked");
+    console.log(
+      "StatusCard " +
+        stats.Name +
+        " clicked. With Colors " +
+        JSON.stringify(Colors)
+    );
   };
 
+let healthBarStatsLoaded = false;
+if(health && maxHealth && drunkenness !== null && minDrunkenness !== null) {
+  healthBarStatsLoaded = true;
+}
+
+  const statsBoarderString = "4px solid " + Colors[2];
+
   return (
-    <CardBox style={{...style, position: "relative"}} hoverColor={liftColor}  onClick={onClick} >
+    <CardBox
+      style={{ ...style, position: "relative", backgroundColor: Colors[0] }}
+      hoverColor={liftColor}
+      onClick={onClick}
+    >
       <div
         style={{
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor:"#a06b2d",
+          backgroundColor: Colors[0],
         }}
       >
         <img
           src={image}
           alt="Character Image"
           style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            width: '100%',
-            height: '100px',
-            objectFit: 'contain',
-            margin: 'auto',
+            width: "100%",
+            height: "100px",
+            objectFit: "contain",
+            margin: "auto",
             opacity: 0.8,
           }}
         />
       </div>
       {stats && (
-        <div style={{ maxWidth: "250px", maxHeight: "100px", overflow: "auto" }}>
+        <div style={{ maxWidth: "95%", maxHeight: "124px", overflow: "auto" }}>
           <table>
             <tbody>
               <tr>
                 {stats.map((stat, index) => (
-                  <td key={index} style={{borderLeft: "2px dotted black", borderTop: "2px dotted black",borderRight: "2px dotted black", textAlign:'center'}}>
-                    <Textfit mode="single" max={14} style={{ width: "75px", height: "20px"}}>
-                      <strong style={{fontSize:"14px", textAlign:'center' }}>{stat.name && stat.name}</strong>
+                  <td
+                    key={index}
+                    style={{
+                      borderLeft: statsBoarderString,
+                      borderTop: statsBoarderString,
+                      borderRight: statsBoarderString,
+                      textAlign: "center",
+                    }}
+                  >
+                    <Textfit
+                      mode="single"
+                      max={28}
+                      style={{ width: "75px", height: "40px" }}
+                    >
+                      <strong
+                        style={{
+                          fontSize: "14px",
+                          textAlign: "center",
+                          color: Colors[2],
+                        }}
+                      >
+                        {stat.name && stat.name}
+                      </strong>
                     </Textfit>
                   </td>
                 ))}
               </tr>
               <tr>
                 {stats.map((stat, index) => (
-                  <td key={index} style={{fontSize:"14px", borderLeft: "2px dotted black", borderBottom: "2px dotted black",borderRight: "2px dotted black", textAlign:'center'}}>
-                    <Textfit mode="single" max={14} style={{ width: "75px", height: "20px"}}>
+                  <td
+                    key={index}
+                    style={{
+                      fontSize: "14px",
+                      borderLeft: statsBoarderString,
+                      borderBottom: statsBoarderString,
+                      borderRight: statsBoarderString,
+                      textAlign: "center",
+                    }}
+                  >
+                    {" "}
+                    <Textfit
+                      mode="single"
+                      max={20}
+                      style={{
+                        width: "75px",
+                        height: "40px",
+                        color: Colors[2],
+                      }}
+                    >
                       {stat.value && stat.value}
                     </Textfit>
                   </td>
@@ -89,6 +144,56 @@ const StatusCard = (props) => {
               </tr>
             </tbody>
           </table>
+        </div>
+      )}
+      {healthBarStatsLoaded && (
+        <div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: Colors[0],
+            }}
+          >
+            <Textfit
+              mode="single"
+              max={20}
+              style={{
+                width: "225px",
+                height: "40px",
+                color: Colors[2],
+                borderBottom: "4px solid " + Colors[2],
+                textAlign: "center",
+              }}
+            >
+              <strong>Health: {health + "/" + maxHealth}</strong>
+            </Textfit>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: Colors[0],
+            }}
+          >
+            <Textfit
+              mode="single"
+              max={20}
+              style={{
+                width: "225px",
+                height: "40px",
+                color: Colors[2],
+                borderBottom: "4px solid " + Colors[2],
+                textAlign: "center",
+              }}
+            >
+              <strong>Drunkenness: {drunkenness + "/" + minDrunkenness}</strong>
+            </Textfit>
+          </div>
         </div>
       )}
     </CardBox>

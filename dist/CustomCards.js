@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.statusCards = exports.PersonalDeckCard = void 0;
+exports.StatusCard = exports.PersonalDeckCard = void 0;
 var _react = _interopRequireDefault(require("react"));
 var _reactTextfit = require("react-textfit");
 var _tonychris = _interopRequireDefault(require("./images/tonychris.jpg"));
@@ -26,14 +26,13 @@ const CardBox = _ref => {
     onClick: onClick
   }, children);
 };
-const statusCards = props => {
+const StatusCard = props => {
   const {
     image = _tonychris.default,
-    stats = {
-      'name': 'Character Name',
-      'cash': 69
-    },
-    //this is a placeholder, the stats should be an array of objects with a name and value, like {name: "Character Name", cash: 69
+    stats = [{
+      'Name': 'Character Name',
+      'Cash': 69
+    }],
     health = 69,
     maxHealth = 69,
     drunkenness = -69,
@@ -45,47 +44,86 @@ const statusCards = props => {
       minHeight: "300px",
       minWidth: "450px"
     },
-    // default values for height and width
-    G = {
-      G
-    },
-    ctx = {
-      ctx
-    }
+    G,
+    ctx,
+    Colors
   } = props;
+  const onClick = () => {
+    console.log("StatusCard " + stats.Name + " clicked");
+  };
   return /*#__PURE__*/_react.default.createElement(CardBox, {
     style: {
       ...style,
-      position: "relative"
+      position: "relative",
+      backgroundColor: Colors[0]
     },
     hoverColor: liftColor,
-    onClick: props.onClick
+    onClick: onClick
   }, /*#__PURE__*/_react.default.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: "#a06b2d"
+      backgroundColor: Colors[0]
     }
   }, /*#__PURE__*/_react.default.createElement("img", {
     src: image,
     alt: "Character Image",
     style: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      width: '',
-      height: '100%',
+      width: '100%',
+      height: '100px',
       objectFit: 'contain',
       margin: 'auto',
       opacity: 0.8
     }
-  })));
+  })), stats && /*#__PURE__*/_react.default.createElement("div", {
+    style: {
+      maxWidth: "95%",
+      maxHeight: "124px",
+      overflow: "auto"
+    }
+  }, /*#__PURE__*/_react.default.createElement("table", null, /*#__PURE__*/_react.default.createElement("tbody", null, /*#__PURE__*/_react.default.createElement("tr", null, stats.map((stat, index) => /*#__PURE__*/_react.default.createElement("td", {
+    key: index,
+    style: {
+      borderLeft: "2px dotted black",
+      borderTop: "2px dotted black",
+      borderRight: "2px dotted black",
+      textAlign: 'center'
+    }
+  }, /*#__PURE__*/_react.default.createElement(_reactTextfit.Textfit, {
+    mode: "single",
+    max: 28,
+    style: {
+      width: "75px",
+      height: "40px",
+      color: Colors[2]
+    }
+  }, /*#__PURE__*/_react.default.createElement("strong", {
+    style: {
+      fontSize: "14px",
+      textAlign: 'center',
+      color: Colors[2]
+    }
+  }, stat.name && stat.name))))), /*#__PURE__*/_react.default.createElement("tr", null, stats.map((stat, index) => /*#__PURE__*/_react.default.createElement("td", {
+    key: index,
+    style: {
+      fontSize: "14px",
+      borderLeft: "2px dotted black",
+      borderBottom: "2px dotted black",
+      borderRight: "2px dotted black",
+      textAlign: 'center'
+    }
+  }, /*#__PURE__*/_react.default.createElement(_reactTextfit.Textfit, {
+    mode: "single",
+    max: 20,
+    style: {
+      width: "75px",
+      height: "40px"
+    }
+  }, stat.value && stat.value))))))));
 };
-exports.statusCards = statusCards;
+exports.StatusCard = StatusCard;
 const PersonalDeckCard = props => {
   const {
     name,

@@ -42,38 +42,48 @@ function StatusCards(_ref2) {
     G,
     ctx
   } = _ref2;
+  console.log('G:', G);
+  console.log('ctx:', ctx);
   const statusCards = [];
   for (let i = 0; i < ctx.numPlayers; i++) {
+    console.log('i:', i);
+    console.log('G.characterID[i]:', G.characterID[i]);
     if (isNotNullOrUndefined(G.characterID[i])) {
-      statusCards.push(
-      /*#__PURE__*/
-      /*
-      <StatusCards
-        key={i}
-        name={G.characterLongName[i]}
-        stats={[
-          { name: 'Name', value: G.characterLongName[i] },
-          { name: 'Cash', value: G.cash[i] },
-        ]}
-        health={G.health[i]}
-        maxHealth={G.maxHealth[i]}
-        drunkenness={G.drunkenness[i]}
-        minDrunkenness={G.minDrunkenness[i]}
-        liftColor={characters[G.characterID[i]].liftColor}
-        G={G}
-        ctx={ctx}
-      />
-      */
-      _react.default.createElement("h1", null, "Player ", i));
+      console.log('characters[G.characterID[i]].liftColor:', _characters.characters[G.characterID[i]].liftColor);
+      statusCards.push( /*#__PURE__*/_react.default.createElement(_CustomCards.StatusCard, {
+        key: i,
+        name: G.characterLongName[i],
+        stats: [{
+          name: 'Name',
+          value: G.characterShortName[i]
+        }, {
+          name: 'Cash',
+          value: G.cash[i]
+        }],
+        health: G.health[i],
+        maxHealth: G.maxHealth[i],
+        drunkenness: G.drunkenness[i],
+        minDrunkenness: G.minDrunkenness[i],
+        liftColor: _characters.characters[G.characterID[i]].Colors[1],
+        G: G,
+        ctx: ctx,
+        Colors: _characters.characters[G.characterID[i]].Colors,
+        style: {
+          height: "300px",
+          width: "450px",
+          minHeight: "300px",
+          minWidth: "450px"
+        }
+      }));
     }
   }
-  return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("h1", null, "Status of all players"), /*#__PURE__*/_react.default.createElement("div", {
+  console.log('statusCards:', statusCards);
+  return /*#__PURE__*/_react.default.createElement("div", {
     style: {
       display: 'flex',
-      justifyContent: 'left',
-      flexWrap: 'wrap'
+      justifyContent: 'space-around'
     }
-  }, statusCards));
+  }, statusCards);
 }
 function Stack(_ref3) {
   let {
