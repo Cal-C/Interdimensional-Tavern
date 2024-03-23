@@ -250,13 +250,12 @@ function discard(_ref6, i, playID) {
   let {
     G
   } = _ref6;
-  console.log("Discarding card " + i + " for player " + playID);
   if (!G.hand[playID]) {
-    console.log("Player " + playID + " has no hand");
+    console.error("Player " + playID + " has no hand");
     return;
   }
   if (!G.hand[playID][i]) {
-    console.log("Player " + playID + " has no card at index " + i);
+    console.error("Player " + playID + " has no card at index " + i);
     return;
   }
   let card = G.hand[playID].splice(i, 1)[0];
@@ -381,25 +380,26 @@ function checkValidMove(_ref13, playerChecked, cardChecked) {
     G,
     ctx
   } = _ref13;
-  console.log("Checking if player " + playerChecked + " can play card " + cardChecked);
   if (G.hand[playerChecked] === null) {
-    console.log("Player " + playerChecked + " has no hand");
+    console.error("Player " + playerChecked + " has no hand");
     return false;
   }
   let valid = false;
   let card = _Cards.Cards.find(card => card.id === G.hand[playerChecked][cardChecked]);
   if (card === undefined) {
-    console.log("Card not found");
+    console.error("Card " + G.hand[playerChecked][cardChecked] + " not found");
     return valid;
   }
   if (card.whenPlayable.includes("Action")) {
-    /*
-    if(ctx.activePlayers[playerChecked]){
-        if(ctx.activePlayers[playerChecked] === "Action") {
-            valid = true;
+    if (ctx.activePlayers) {
+      if (ctx.activePlayers[playerChecked]) {
+        if (ctx.activePlayers[playerChecked] === "Action") {
+          valid = true;
         }
+      }
+    } else {
+      console.error("Active players not found");
     }
-    */
   }
   if (card.whenPlayable.includes("Whenever")) {
     valid = true;

@@ -30,6 +30,7 @@ const PersonalDeckCard = (props) => {
     style = { height: "500px", width: "250px", minHeight: "500px", minWidth: "250px" }, // default values for height and width
     trashing = false,
     inStack = false,
+    liftColor = "InHand",
   } = props;
 
   const handleClick = () => {
@@ -44,8 +45,14 @@ const PersonalDeckCard = (props) => {
       props.moves.playCard(index); // replace 'moveNameWhenNotDiscarding' with the name of your move
     }
 };
+let hoverColor = liftColor;
+  if(liftColor === "InHand") {
+   hoverColor = colorFromPlayable(props);
+  }
+  else{
+    console.log("LiftColor has been passed as: " + liftColor + " for " + name + " card.");
+  }
 
-  const hoverColor = colorFromPlayable(props);
   return (
     <CardBox style={{...style, position: "relative"}} hoverColor={hoverColor}  onClick={handleClick}>
         {trashing && (

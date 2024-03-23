@@ -106,7 +106,8 @@ function DisplayCardinStack({index, cardId, playedByPlayerId, G, moves, playerID
     "2": "#0c07ad",
     "3": "#ad07ac",
     default: "#07aaad"
-  }[playedByPlayerId];
+  }[String(playedByPlayerId)];
+
   return (
     <PersonalDeckCard
     float
@@ -116,7 +117,7 @@ function DisplayCardinStack({index, cardId, playedByPlayerId, G, moves, playerID
     stats = {[
       {name: 'Playable', value: camelToSpaced(card.whenPlayable.join(", "))},
       {name: 'Type', value: camelToSpaced(card.playType)},
-      {name: 'Played By', value: "Player " + playedByPlayerId}
+      {name: 'Played By', value: "Player " + playedByPlayerId},
     ]}
     trashing = {G.discardingHand[playerID][index]}
     moves = {moves}
@@ -124,6 +125,7 @@ function DisplayCardinStack({index, cardId, playedByPlayerId, G, moves, playerID
     playerID = {playedByPlayerId}
     Stack = {true}
     G = {G}
+    liftColor = {cardColor}
     />
 
   );

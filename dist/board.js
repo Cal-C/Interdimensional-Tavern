@@ -112,7 +112,7 @@ function DisplayCardinStack(_ref4) {
     "2": "#0c07ad",
     "3": "#ad07ac",
     default: "#07aaad"
-  }[playedByPlayerId];
+  }[String(playedByPlayerId)];
   return /*#__PURE__*/_react.default.createElement(_CustomCards.PersonalDeckCard, {
     float: true,
     name: card.name,
@@ -135,7 +135,8 @@ function DisplayCardinStack(_ref4) {
     index: index,
     playerID: playedByPlayerId,
     Stack: true,
-    G: G
+    G: G,
+    liftColor: cardColor
   });
 }
 function Hand(_ref5) {

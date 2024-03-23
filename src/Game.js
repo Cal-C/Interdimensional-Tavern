@@ -175,13 +175,12 @@ function discardSelection({G, events, moves, ctx}, playID) {
 }
 
 function discard({G}, i, playID) {
-    console.log("Discarding card " + i + " for player " + playID);
     if (!G.hand[playID]) {
-        console.log("Player " + playID + " has no hand");
+        console.error("Player " + playID + " has no hand");
         return;
     }
     if (!G.hand[playID][i]) {
-        console.log("Player " + playID + " has no card at index " + i);
+        console.error("Player " + playID + " has no card at index " + i);
         return;
     }
     let card = G.hand[playID].splice(i, 1)[0];
@@ -274,25 +273,27 @@ function checkPlayerValidMoves({G, ctx}, playerChecked) {
 }
 
 function checkValidMove({G, ctx}, playerChecked, cardChecked) {
-    console.log("Checking if player " + playerChecked + " can play card " + cardChecked);
     if(G.hand[playerChecked] === null) {
-        console.log("Player " + playerChecked + " has no hand");
+        console.error("Player " + playerChecked + " has no hand");
         return false;
     }
     let valid = false;
     let card = Cards.find(card => card.id === G.hand[playerChecked][cardChecked]);
     if(card === undefined) {
-        console.log("Card not found");
+        console.error("Card " + G.hand[playerChecked][cardChecked] +" not found");
         return valid;
     }
     if(card.whenPlayable.includes("Action")) {
-        /*
+       if(ctx.activePlayers){
         if(ctx.activePlayers[playerChecked]){
             if(ctx.activePlayers[playerChecked] === "Action") {
                 valid = true;
             }
-        }
-        */
+         }
+       }
+       else {
+              console.error("Active players not found"); //this is expected to happen during setup, but should not happen after the first draw stage.
+         }
     }
         
     if(card.whenPlayable.includes("Whenever")){
@@ -372,7 +373,7 @@ function drawToMaxHandInternal (G, ctx, playerID) {
 function playCard({G, playerID, ctx}, cardIndex, target = null) {
     checkPlayerValidMoves({G, ctx}, playerID);
     let cardLegal = checkValidMove({G, playerID}, playerID, cardIndex);
-    
+
     let card = G.hand[playerID].splice(cardIndex, 1);
     let cardPlayed = Cards.find(c => c.id === card[0]);
     if(cardPlayed === undefined) {

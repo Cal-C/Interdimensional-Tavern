@@ -42,7 +42,8 @@ const PersonalDeckCard = props => {
     },
     // default values for height and width
     trashing = false,
-    inStack = false
+    inStack = false,
+    liftColor = "InHand"
   } = props;
   const handleClick = () => {
     if (props.G.discarding[playerID]) {
@@ -56,7 +57,12 @@ const PersonalDeckCard = props => {
       props.moves.playCard(index); // replace 'moveNameWhenNotDiscarding' with the name of your move
     }
   };
-  const hoverColor = colorFromPlayable(props);
+  let hoverColor = liftColor;
+  if (liftColor === "InHand") {
+    hoverColor = colorFromPlayable(props);
+  } else {
+    console.log("LiftColor has been passed as: " + liftColor + " for " + name + " card.");
+  }
   return /*#__PURE__*/_react.default.createElement(CardBox, {
     style: {
       ...style,
