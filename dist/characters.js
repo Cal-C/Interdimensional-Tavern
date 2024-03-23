@@ -14,5 +14,6 @@ const characters = exports.characters = [{
   maxHealth: 20,
   minDrunkenness: 0,
   Deck: ["G1", "G1", "G1", "G1", "G1", "G2", "G2", "G2", "G2", "G2", "G2", "G3", "G3", "G3", "G3", "G3", "G3", "G4", "G4", "G4", "G4", "G4", "G4"],
-  cash: 20
+  cash: 20,
+  liftColor: "#740b0b"
 }];

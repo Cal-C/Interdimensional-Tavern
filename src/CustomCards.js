@@ -19,6 +19,87 @@ const CardBox = ({ children, style, hoverColor, onClick }) => {
   );
 };
 
+const StatusCard = (props) => {
+  const {
+    image = imageDefault,
+    stats = [{'Name': 'Character Name', 'Cash': 69}],
+    health = 69,
+    maxHealth = 69,
+    drunkenness = -69,
+    minDrunkenness = -69,
+    liftColor = "#540a27",
+    style = { height: "300px", width: "450px", minHeight: "300px", minWidth: "450px" },
+    G ,
+    ctx ,
+  } = props;
+
+  const onClick = () => {
+    console.log("StatusCard "+ stats.Name +" clicked");
+  };
+
+  return (
+    <CardBox style={{...style, position: "relative"}} hoverColor={liftColor}  onClick={onClick} >
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor:"#a06b2d",
+        }}
+      >
+        <img
+          src={image}
+          alt="Character Image"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100%',
+            height: '100px',
+            objectFit: 'contain',
+            margin: 'auto',
+            opacity: 0.8,
+          }}
+        />
+      </div>
+      {stats && (
+        <div style={{ maxWidth: "250px", maxHeight: "100px", overflow: "auto" }}>
+          <table>
+            <tbody>
+              <tr>
+                {stats.map((stat, index) => (
+                  <td key={index} style={{borderLeft: "2px dotted black", borderTop: "2px dotted black",borderRight: "2px dotted black", textAlign:'center'}}>
+                    <Textfit mode="single" max={14} style={{ width: "75px", height: "20px"}}>
+                      <strong style={{fontSize:"14px", textAlign:'center' }}>{stat.name && stat.name}</strong>
+                    </Textfit>
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                {stats.map((stat, index) => (
+                  <td key={index} style={{fontSize:"14px", borderLeft: "2px dotted black", borderBottom: "2px dotted black",borderRight: "2px dotted black", textAlign:'center'}}>
+                    <Textfit mode="single" max={14} style={{ width: "75px", height: "20px"}}>
+                      {stat.value && stat.value}
+                    </Textfit>
+                  </td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
+    </CardBox>
+  );
+};
+
+
+
+export{StatusCard};
+
+
 const PersonalDeckCard = (props) => {
   const {
     name,

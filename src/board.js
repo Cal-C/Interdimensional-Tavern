@@ -4,7 +4,7 @@ import {characters} from './characters.js';
 import {iTavernGame} from './Game.js';
 import {Cards} from './Cards.js'
 
-import { PersonalDeckCard } from './CustomCards.js';
+import { PersonalDeckCard, StatusCard } from './CustomCards.js';
 
 import Loading from 'react-loading';
 
@@ -54,35 +54,39 @@ function Header({ctx, playerID}) {
 
 
 function StatusCards({ G, ctx }) {
-  const userCards = [];
+  console.log('G:', G);
+  console.log('ctx:', ctx);
+
+  const statusCards = [];
   for (let i = 0; i < ctx.numPlayers; i++) {
+    console.log('i:', i);
+    console.log('G.characterID[i]:', G.characterID[i]);
+
     if (isNotNullOrUndefined(G.characterID[i])) {
-      userCards.push(
-        <UserCard
+      console.log('characters[G.characterID[i]].liftColor:', characters[G.characterID[i]].liftColor);
+
+      statusCards.push(
+        <StatusCard
           key={i}
-          float
           name={G.characterLongName[i]}
-          positionName= {'Player ' + i + ' status'}
           stats={[
-            { name: 'Health', value: G.health[i] },
-            { name: 'Drunkenness', value: G.drunkenness[i] },
+            { name: 'Name', value: G.characterLongName[i] },
             { name: 'Cash', value: G.cash[i] },
-            
           ]}
-          style={{ width: '300px', height: '500px' }}
+          health={G.health[i]}
+          maxHealth={G.maxHealth[i]}
+          drunkenness={G.drunkenness[i]}
+          minDrunkenness={G.minDrunkenness[i]}
+          liftColor={characters[G.characterID[i]].liftColor}
+          G={G}
+          ctx={ctx}
         />
       );
     }
   }
 
-  return (
-    <div>
-      <h1>Status of all players</h1>
-        <div style={{ display: 'flex', justifyContent: 'left', flexWrap: 'wrap' }}>
-          {userCards}
-        </div>
-    </div>
-  );
+  console.log('statusCards:', statusCards);
+  return statusCards;
 }
 
 function Stack({G, moves, playerID}){

@@ -12,6 +12,7 @@ export const characters = [
                 "G2","G2","G2","G2","G2","G2",
                 "G3","G3","G3","G3","G3","G3",
                 "G4","G4","G4","G4","G4","G4"],
-        cash : 20
+        cash : 20,
+        liftColor : "#740b0b",
     }
 ]

@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.PersonalDeckCard = void 0;
+exports.statusCards = exports.PersonalDeckCard = void 0;
 var _react = _interopRequireDefault(require("react"));
 var _reactTextfit = require("react-textfit");
 var _tonychris = _interopRequireDefault(require("./images/tonychris.jpg"));
@@ -26,6 +26,66 @@ const CardBox = _ref => {
     onClick: onClick
   }, children);
 };
+const statusCards = props => {
+  const {
+    image = _tonychris.default,
+    stats = {
+      'name': 'Character Name',
+      'cash': 69
+    },
+    //this is a placeholder, the stats should be an array of objects with a name and value, like {name: "Character Name", cash: 69
+    health = 69,
+    maxHealth = 69,
+    drunkenness = -69,
+    minDrunkenness = -69,
+    liftColor = "#540a27",
+    style = {
+      height: "300px",
+      width: "450px",
+      minHeight: "300px",
+      minWidth: "450px"
+    },
+    // default values for height and width
+    G = {
+      G
+    },
+    ctx = {
+      ctx
+    }
+  } = props;
+  return /*#__PURE__*/_react.default.createElement(CardBox, {
+    style: {
+      ...style,
+      position: "relative"
+    },
+    hoverColor: liftColor,
+    onClick: props.onClick
+  }, /*#__PURE__*/_react.default.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: "#a06b2d"
+    }
+  }, /*#__PURE__*/_react.default.createElement("img", {
+    src: image,
+    alt: "Character Image",
+    style: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      width: '',
+      height: '100%',
+      objectFit: 'contain',
+      margin: 'auto',
+      opacity: 0.8
+    }
+  })));
+};
+exports.statusCards = statusCards;
 const PersonalDeckCard = props => {
   const {
     name,

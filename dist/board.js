@@ -42,29 +42,29 @@ function StatusCards(_ref2) {
     G,
     ctx
   } = _ref2;
-  const userCards = [];
+  const statusCards = [];
   for (let i = 0; i < ctx.numPlayers; i++) {
     if (isNotNullOrUndefined(G.characterID[i])) {
-      userCards.push( /*#__PURE__*/_react.default.createElement(_reactUiCards.UserCard, {
-        key: i,
-        float: true,
-        name: G.characterLongName[i],
-        positionName: 'Player ' + i + ' status',
-        stats: [{
-          name: 'Health',
-          value: G.health[i]
-        }, {
-          name: 'Drunkenness',
-          value: G.drunkenness[i]
-        }, {
-          name: 'Cash',
-          value: G.cash[i]
-        }],
-        style: {
-          width: '300px',
-          height: '500px'
-        }
-      }));
+      statusCards.push(
+      /*#__PURE__*/
+      /*
+      <StatusCards
+        key={i}
+        name={G.characterLongName[i]}
+        stats={[
+          { name: 'Name', value: G.characterLongName[i] },
+          { name: 'Cash', value: G.cash[i] },
+        ]}
+        health={G.health[i]}
+        maxHealth={G.maxHealth[i]}
+        drunkenness={G.drunkenness[i]}
+        minDrunkenness={G.minDrunkenness[i]}
+        liftColor={characters[G.characterID[i]].liftColor}
+        G={G}
+        ctx={ctx}
+      />
+      */
+      _react.default.createElement("h1", null, "Player ", i));
     }
   }
   return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("h1", null, "Status of all players"), /*#__PURE__*/_react.default.createElement("div", {
@@ -73,7 +73,7 @@ function StatusCards(_ref2) {
       justifyContent: 'left',
       flexWrap: 'wrap'
     }
-  }, userCards));
+  }, statusCards));
 }
 function Stack(_ref3) {
   let {
