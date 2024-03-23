@@ -20,7 +20,15 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Interdimensional Tavern</h1>
+      <h1 style={{
+        color: "#9d5e2b",
+        backgroundColor: "#4d2204",
+        textAlign: "center",
+        border: "5px offset #170d05",
+        textShadow: "0 0 3px #77d778, 0 0 10px #77d778",
+        fontFamily: "Copperplate, fantasy,",
+      }}
+      >Interdimensional Tavern</h1>
       {selectedPlayerID === null ? (
         <>
           <button onClick={() => setSelectedPlayerID('0')}>Select Player 0</button>

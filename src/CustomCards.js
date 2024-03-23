@@ -65,11 +65,15 @@ const StatusCard = (props) => {
     healthBarStatsLoaded = true;
   }
 
-  const statsBoarderString = "4px solid " + Colors[2];
+  const statsBoarderString = "4px groove " + Colors[3];
 
   return (
     <CardBox
-      style={{ ...style, position: "relative", backgroundColor: Colors[0] }}
+      style={{ ...style, 
+        position: "relative", 
+        backgroundColor: Colors[0],
+        border: "5px groove " + Colors[1],
+       }}
       hoverColor={liftColor}
       onClick={onClick}
     >
@@ -91,6 +95,9 @@ const StatusCard = (props) => {
             objectFit: "contain",
             margin: "auto",
             opacity: 0.8,
+            borderBottom: "5px groove " + Colors[1],
+            marginBottom: "2px",
+            paddingBottom: "2px",
           }}
         />
       </div>
@@ -161,7 +168,7 @@ const StatusCard = (props) => {
       {healthBarStatsLoaded && (
         <div
           style={{
-            border: "4px double " + Colors[2],
+            border: "4px inset " + Colors[1],
             margin: "5px",
             maxWidth: "95%",
             maxHeight: "30%",
@@ -340,7 +347,7 @@ const PersonalDeckCard = (props) => {
             width: "225px",
             maxHeight: "35px",
             textAlign: "center",
-            borderBottom: "5px solid "+ Colors[1],
+            borderBottom: "5px groove "+ Colors[1],
             justifyContent: "center",
             color: Colors[2],
           }}
@@ -368,11 +375,13 @@ const PersonalDeckCard = (props) => {
               minHeight: "150px",
               height: "150px",
               maxHeight: "150px",
-              width: "240px",
-              border: "8px solid "+ Colors[1],
-              marginLeft: "10px",
-              marginRight: "10px",
+              width: "230px",
+              border: "4px inset "+ Colors[1],
+              padding: "2px",
               margin: "5px",
+              marginLeft: "7px",
+              marginRight: "7px",
+              
               color: Colors[2],
               backgroundColor: Colors[3],
             }}

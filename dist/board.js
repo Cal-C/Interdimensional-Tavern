@@ -126,7 +126,7 @@ function DisplayCardinStack(_ref4) {
     playerID
   } = _ref4;
   const card = _Cards.Cards.find(card => card.id === cardId);
-  const cardColor = {
+  const liftColor = {
     "0": "#b30b02",
     "1": "#215212",
     "2": "#0c07ad",
@@ -138,7 +138,7 @@ function DisplayCardinStack(_ref4) {
     name: card.name,
     description: card.description,
     style: {
-      liftColor: cardColor
+      liftColor: liftColor
     },
     stats: [{
       name: 'Playable',
@@ -156,7 +156,8 @@ function DisplayCardinStack(_ref4) {
     playerID: playedByPlayerId,
     Stack: true,
     G: G,
-    liftColor: cardColor
+    liftColor: liftColor,
+    Colors: _characters.characters[G.characterID[playedByPlayerId]].Colors
   });
 }
 function Hand(_ref5) {
@@ -234,14 +235,14 @@ function DisplayCardinHand(_ref7) {
   } = _ref7;
   const card = _Cards.Cards.find(card => card.id === cardId);
   const isValid = G.handValidity[playerID][index];
-  const cardColor = isValid ? '#76CC76' : '#D75265'; // replace 'green' and 'red' with actual color codes
+  const liftColor = isValid ? '#76CC76' : '#D75265'; // replace 'green' and 'red' with actual color codes
   const playableEmoji = isValid ? '✅' : '❌';
   return /*#__PURE__*/_react.default.createElement(_CustomCards.PersonalDeckCard, {
     float: true,
     name: card.name,
     description: card.description,
     style: {
-      liftColor: cardColor
+      liftColor: liftColor
     },
     stats: [{
       name: 'Playable',
@@ -254,7 +255,8 @@ function DisplayCardinHand(_ref7) {
     moves: moves,
     index: index,
     playerID: playerID,
-    G: G
+    G: G,
+    Colors: _characters.characters[G.characterID[playerID]].Colors
   });
 }
 const CharacterSelector = props => {

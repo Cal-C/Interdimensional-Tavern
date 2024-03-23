@@ -41,12 +41,25 @@ export function TavernBoard(props) {
 
 
 
+
 function Header({ctx, playerID}) {
+  let basicInformationString = "Board for player " + playerID + ", Phase: " + ctx.phase + ", Turn for Player: " + ctx.currentPlayer;
+  if(ctx.activePlayers && playerID in ctx.activePlayers){
+    basicInformationString += ", My Stage: " + ctx.activePlayers[playerID];
+  }
+  else{
+    basicInformationString += ", Not In a Stage";
+  }
   return (
     <div>
-      <h1>Board for player {playerID}</h1>
-      <h2>Phase: {ctx.phase}, Turn for Player: {ctx.currentPlayer}</h2>
-      {ctx.activePlayers && playerID in ctx.activePlayers && <h2>My Stage: {ctx.activePlayers[playerID]}</h2>}
+      <h2 style ={{
+        backgroundColor: "#2b2b62",
+        color: "#f6f4e0",
+        border: "5px solid #470b78",
+        marginBottom: "5px",
+        textAlign: "center",
+      }}>
+        {basicInformationString}</h2>
     </div>
   );
 }
@@ -90,7 +103,14 @@ function StatusCards({ G, ctx }) {
 
   console.log('statusCards:', statusCards);
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+    <div style={{ 
+      display: 'flex', 
+      justifyContent: 'space-around',
+      flexWrap: 'wrap',
+      backgroundColor: "#2b2b62",
+      border: "5px solid #470b78",  
+      marginBottom: "5px",
+      }}>
       {statusCards}
     </div>
   );

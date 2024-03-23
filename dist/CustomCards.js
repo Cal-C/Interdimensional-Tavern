@@ -65,7 +65,7 @@ const StatusCard = props => {
     }
     healthBarStatsLoaded = true;
   }
-  const statsBoarderString = "4px solid " + Colors[2];
+  const statsBoarderString = "4px solid " + Colors[3];
   return /*#__PURE__*/_react.default.createElement(CardBox, {
     style: {
       ...style,
@@ -90,7 +90,10 @@ const StatusCard = props => {
       height: "100px",
       objectFit: "contain",
       margin: "auto",
-      opacity: 0.8
+      opacity: 0.8,
+      borderBottom: "5px groove " + Colors[1],
+      marginBottom: "2px",
+      paddingBottom: "2px"
     }
   })), stats && /*#__PURE__*/_react.default.createElement("div", {
     style: {
@@ -138,7 +141,7 @@ const StatusCard = props => {
     }
   }, stat.value && stat.value))))))), healthBarStatsLoaded && /*#__PURE__*/_react.default.createElement("div", {
     style: {
-      border: "4px double " + Colors[2],
+      border: "4px inset " + Colors[1],
       margin: "5px",
       maxWidth: "95%",
       maxHeight: "30%",
@@ -228,7 +231,8 @@ const PersonalDeckCard = props => {
     // default values for height and width
     trashing = false,
     inStack = false,
-    liftColor = "InHand"
+    liftColor = "InHand",
+    Colors
   } = props;
   const handleClick = () => {
     if (props.G.discarding[playerID]) {
@@ -246,6 +250,7 @@ const PersonalDeckCard = props => {
   if (liftColor === "InHand") {
     hoverColor = colorFromPlayable(props);
   }
+  const statsBoarderString = "2px dotted " + Colors[2];
   return /*#__PURE__*/_react.default.createElement(CardBox, {
     style: {
       ...style,
@@ -274,7 +279,7 @@ const PersonalDeckCard = props => {
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: "#a06b2d"
+      backgroundColor: Colors[0]
     }
   }, /*#__PURE__*/_react.default.createElement(_reactTextfit.Textfit, {
     mode: "single",
@@ -285,14 +290,15 @@ const PersonalDeckCard = props => {
       width: "225px",
       maxHeight: "35px",
       textAlign: "center",
-      borderBottom: "5px solid purple",
-      justifyContent: "center"
+      borderBottom: "5px groove " + Colors[1],
+      justifyContent: "center",
+      color: Colors[2]
     }
   }, /*#__PURE__*/_react.default.createElement("h1", null, name)), image && /*#__PURE__*/_react.default.createElement("img", {
     src: image,
     alt: "image",
     style: {
-      border: "8px double black",
+      border: "8px double " + Colors[2],
       maxWidth: "80%",
       height: "200px",
       marginTop: "5px"
@@ -305,52 +311,69 @@ const PersonalDeckCard = props => {
       minHeight: "150px",
       height: "150px",
       maxHeight: "150px",
-      width: "240px",
-      border: "8px double black",
-      marginLeft: "10px",
-      marginRight: "10px"
+      width: "230px",
+      border: "4px inset " + Colors[1],
+      padding: "2px",
+      margin: "5px",
+      marginLeft: "7px",
+      marginRight: "7px",
+      color: Colors[2],
+      backgroundColor: Colors[3]
     }
   }, description), stats && /*#__PURE__*/_react.default.createElement("div", {
     style: {
-      maxWidth: "250px",
+      maxWidth: "240px",
       maxHeight: "100px",
       overflow: "auto"
     }
-  }, /*#__PURE__*/_react.default.createElement("table", null, /*#__PURE__*/_react.default.createElement("tbody", null, /*#__PURE__*/_react.default.createElement("tr", null, stats.map((stat, index) => /*#__PURE__*/_react.default.createElement("td", {
+  }, /*#__PURE__*/_react.default.createElement("table", {
+    style: {
+      width: "240px"
+    }
+  }, /*#__PURE__*/_react.default.createElement("tbody", null, /*#__PURE__*/_react.default.createElement("tr", null, stats.map((stat, index) => /*#__PURE__*/_react.default.createElement("td", {
     key: index,
     style: {
-      borderLeft: "2px dotted black",
-      borderTop: "2px dotted black",
-      borderRight: "2px dotted black",
-      textAlign: "center"
+      borderLeft: statsBoarderString,
+      borderTop: statsBoarderString,
+      borderRight: statsBoarderString,
+      textAlign: "center",
+      width: "40px",
+      height: "10px",
+      maxHeight: "20px",
+      maxWidth: "40px"
     }
   }, /*#__PURE__*/_react.default.createElement(_reactTextfit.Textfit, {
     mode: "single",
     max: 14,
     style: {
-      width: "75px",
-      height: "20px"
+      width: "100%",
+      height: "100%"
     }
   }, /*#__PURE__*/_react.default.createElement("strong", {
     style: {
       fontSize: "14px",
-      textAlign: "center"
+      textAlign: "center",
+      color: Colors[2]
     }
   }, stat.name && stat.name))))), /*#__PURE__*/_react.default.createElement("tr", null, stats.map((stat, index) => /*#__PURE__*/_react.default.createElement("td", {
     key: index,
     style: {
       fontSize: "14px",
-      borderLeft: "2px dotted black",
-      borderBottom: "2px dotted black",
-      borderRight: "2px dotted black",
-      textAlign: "center"
+      borderLeft: statsBoarderString,
+      borderBottom: statsBoarderString,
+      borderRight: statsBoarderString,
+      textAlign: "center",
+      width: "40px",
+      height: "20px",
+      maxWidth: "40px"
     }
   }, /*#__PURE__*/_react.default.createElement(_reactTextfit.Textfit, {
     mode: "single",
     max: 14,
     style: {
-      width: "75px",
-      height: "20px"
+      width: "95%",
+      height: "100%",
+      color: Colors[2]
     }
   }, stat.value && stat.value)))))))));
 };
