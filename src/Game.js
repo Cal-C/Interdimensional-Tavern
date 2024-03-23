@@ -387,17 +387,23 @@ function playCard({G, playerID, ctx}, cardIndex, target = null) {
     }
 
     if(cardPlayed.playType === "Heal") {
+        if(cardPlayed.drunkennessEffect){G.drunkenness[playerID] += cardPlayed.drunkennessEffect;}
         
-        
-        G.drunkenness[playerID] += cardPlayed.drunkennessEffect;
+        if(cardPlayed.healthEffect){G.health[playerID] += cardPlayed.healthEffect};
+        if(G.health[playerID] > G.maxHealth[playerID]) {
+            G.health[playerID] = G.maxHealth[playerID];
+        }
+        if(G.drunkenness[playerID] < G.minDrunkenness[playerID]) {
+            G.drunkenness[playerID] = G.minDrunkenness[playerID];
+        }
     }
     if(cardPlayed.playType === "SingleTargetAttack") {
 
     }
 
-    if(cardPlayed.cashCost) {
-        G.cash[playerID] -= cardPlayed.cashCost;
-        //check if player has gone broke once that function is impiemented
+    if(cardPlayed.cashEffect) {
+        G.cash[playerID] += cardPlayed.cashEffect;
+        //check if player has gone broke once that function is implemented
     }
     G.stack.push({cardId: card[0], playedByPlayerId: playerID});
     console.log("Player " + playerID + " played card " + card[0]);

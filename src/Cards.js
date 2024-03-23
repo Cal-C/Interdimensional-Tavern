@@ -5,7 +5,7 @@ export const Cards = [
         description : "Taps the chosen opponent in the nuts, dealing 2 damage to health.",
         playType : "SingleTargetAttack", //type is an internal identifier for the card, used to determine what code to run when the card is played
         whenPlayable : ["Action"], //whenPlayable is an array of strings that represent the phases in which the card can be played, it will usually just be one thing
-        heathEffect : -2,
+        healthEffect : -2,
     },
     {
         id: "G2",
@@ -14,7 +14,7 @@ export const Cards = [
         playType : "SingleTargetAttack", 
         whenPlayable : ["Action"],
         drunkennessEffect : 2,
-        heathEffect : -1,
+        healthEffect : -1,
     },
     {
         id: "G3",
@@ -22,7 +22,7 @@ export const Cards = [
         description : "Responds to an attack with a counterattack, dealing 1 damage to health.",
         playType : "SingleTargetAttack",
         whenPlayable : ["AfterAttacked"],
-        heathEffect : -1,
+        healthEffect : -1,
     },
     {
         id: "G4",

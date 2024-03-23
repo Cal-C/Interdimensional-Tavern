@@ -398,7 +398,7 @@ function checkValidMove(_ref13, playerChecked, cardChecked) {
         }
       }
     } else {
-      console.error("Active players not found");
+      console.error("Active players not found"); //this is expected to happen during setup, but should not happen after the first draw stage.
     }
   }
   if (card.whenPlayable.includes("Whenever")) {
@@ -507,12 +507,24 @@ function playCard(_ref17, cardIndex) {
     return _core.INVALID_MOVE;
   }
   if (cardPlayed.playType === "Heal") {
-    G.drunkenness[playerID] += cardPlayed.drunkennessEffect;
+    if (cardPlayed.drunkennessEffect) {
+      G.drunkenness[playerID] += cardPlayed.drunkennessEffect;
+    }
+    if (cardPlayed.healthEffect) {
+      G.health[playerID] += cardPlayed.healthEffect;
+    }
+    ;
+    if (G.health[playerID] > G.maxHealth[playerID]) {
+      G.health[playerID] = G.maxHealth[playerID];
+    }
+    if (G.drunkenness[playerID] < G.minDrunkenness[playerID]) {
+      G.drunkenness[playerID] = G.minDrunkenness[playerID];
+    }
   }
   if (cardPlayed.playType === "SingleTargetAttack") {}
-  if (cardPlayed.cashCost) {
-    G.cash[playerID] -= cardPlayed.cashCost;
-    //check if player has gone broke once that function is impiemented
+  if (cardPlayed.cashEffect) {
+    G.cash[playerID] += cardPlayed.cashEffect;
+    //check if player has gone broke once that function is implemented
   }
   G.stack.push({
     cardId: card[0],

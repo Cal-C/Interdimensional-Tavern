@@ -60,8 +60,6 @@ const PersonalDeckCard = props => {
   let hoverColor = liftColor;
   if (liftColor === "InHand") {
     hoverColor = colorFromPlayable(props);
-  } else {
-    console.log("LiftColor has been passed as: " + liftColor + " for " + name + " card.");
   }
   return /*#__PURE__*/_react.default.createElement(CardBox, {
     style: {

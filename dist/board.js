@@ -81,7 +81,18 @@ function Stack(_ref3) {
     moves,
     playerID
   } = _ref3;
-  return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("h1", null, "Stack"), /*#__PURE__*/_react.default.createElement("div", {
+  return /*#__PURE__*/_react.default.createElement("div", {
+    style: {
+      border: "5px solid #470b78",
+      marginBottom: "5px",
+      backgroundColor: "#a07ac3"
+    }
+  }, /*#__PURE__*/_react.default.createElement("h1", {
+    style: {
+      margin: "0px",
+      textAlign: "center"
+    }
+  }, "Cards Played this Stage"), /*#__PURE__*/_react.default.createElement("div", {
     style: {
       display: 'flex',
       justifyContent: 'left',

@@ -49,9 +49,6 @@ let hoverColor = liftColor;
   if(liftColor === "InHand") {
    hoverColor = colorFromPlayable(props);
   }
-  else{
-    console.log("LiftColor has been passed as: " + liftColor + " for " + name + " card.");
-  }
 
   return (
     <CardBox style={{...style, position: "relative"}} hoverColor={hoverColor}  onClick={handleClick}>

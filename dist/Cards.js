@@ -12,7 +12,7 @@ const Cards = exports.Cards = [{
   //type is an internal identifier for the card, used to determine what code to run when the card is played
   whenPlayable: ["Action"],
   //whenPlayable is an array of strings that represent the phases in which the card can be played, it will usually just be one thing
-  heathEffect: -2
+  healthEffect: -2
 }, {
   id: "G2",
   name: "Get Iced",
@@ -21,14 +21,14 @@ const Cards = exports.Cards = [{
   playType: "SingleTargetAttack",
   whenPlayable: ["Action"],
   drunkennessEffect: 2,
-  heathEffect: -1
+  healthEffect: -1
 }, {
   id: "G3",
   name: "Rally and Rage",
   description: "Responds to an attack with a counterattack, dealing 1 damage to health.",
   playType: "SingleTargetAttack",
   whenPlayable: ["AfterAttacked"],
-  heathEffect: -1
+  healthEffect: -1
 }, {
   id: "G4",
   name: "Witch's Hangover Cure",

@@ -87,8 +87,8 @@ function StatusCards({ G, ctx }) {
 
 function Stack({G, moves, playerID}){
   return (
-    <div>
-      <h1>Stack</h1>
+    <div style ={{border: "5px solid #470b78", marginBottom:"5px", backgroundColor: "#a07ac3"}}>
+      <h1 style ={{margin: "0px", textAlign: "center"}}>Cards Played this Stage</h1>
       <div style={{ display: 'flex', justifyContent: 'left', flexWrap: 'wrap' }}>
       {G.stack.map((card, index) => (
         <DisplayCardinStack index={index} cardId={card.cardId} playedByPlayerId={card.playedByPlayerId} G={G} moves={moves} playerID={playerID} />
