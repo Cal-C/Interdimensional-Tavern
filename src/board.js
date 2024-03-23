@@ -79,7 +79,6 @@ function StatusCards({ G, ctx }) {
 
       statusCards.push(
         <StatusCard
-          key={i}
           name={G.characterLongName[i]}
           stats={[
             { name: 'Name', value: G.characterShortName[i] },
@@ -90,6 +89,7 @@ function StatusCards({ G, ctx }) {
           maxHealth={G.maxHealth[i]}
           drunkenness={G.drunkenness[i]}
           minDrunkenness={G.minDrunkenness[i]}
+          playerID={i}
           
           liftColor={characters[G.characterID[i]].Colors[1]}
           G={G}

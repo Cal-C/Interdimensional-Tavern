@@ -26,9 +26,9 @@ const StatusCard = (props) => {
     image = imageDefault,
     stats = [{ Name: "Character Name", Cash: 69 }],
     health = 20,
-    maxHealth = 20,
-    drunkenness = 1,
-    minDrunkenness = 0,
+    maxHealth = 25,
+    drunkenness = 5,
+    minDrunkenness = -2,
     liftColor = "#540a27",
     style = {
       height: "300px",
@@ -39,6 +39,7 @@ const StatusCard = (props) => {
     G,
     ctx,
     Colors,
+    playerID,
   } = props;
 
   const onClick = () => {
@@ -69,11 +70,12 @@ const StatusCard = (props) => {
 
   return (
     <CardBox
-      style={{ ...style, 
-        position: "relative", 
+      style={{
+        ...style,
+        position: "relative",
         backgroundColor: Colors[0],
         border: "5px groove " + Colors[1],
-       }}
+      }}
       hoverColor={liftColor}
       onClick={onClick}
     >
@@ -166,97 +168,134 @@ const StatusCard = (props) => {
         </div>
       )}
       {healthBarStatsLoaded && (
-        <div
-          style={{
-            border: "4px inset " + Colors[1],
-            margin: "5px",
-            maxWidth: "95%",
-            maxHeight: "30%",
-            overflow: "auto",
-            backgroundColor: Colors[3],
-            justifyContent: "space-between",
-          }}
-        >
+        <div>
           <div
             style={{
+              border: "4px inset " + Colors[1],
+              margin: "5px",
+              maxWidth: "95%",
+              maxHeight: "30%",
+              overflow: "auto",
               backgroundColor: Colors[3],
-              maxWidth: "99.5%",
-              maxHeight: "27%",
+              justifyContent: "space-between",
             }}
           >
-            {bustedBy === 0 && (
-              <div>
-                <div
-                  style={{
-                    backgroundColor: Colors[1],
-                    width: healthPercent + "%",
-                    height: "50px",
-                    float: "left",
-                    marginTop: "3px",
-                    marginBottom: "3px",
-                    marginLeft: "3px",
-                  }}
-                >
-                  <strong
+            <div
+              style={{
+                backgroundColor: Colors[3],
+                maxWidth: "99.5%",
+                maxHeight: "27%",
+              }}
+            >
+              {bustedBy === 0 && (
+                <div>
+                  <div
                     style={{
-                      whiteSpace: "nowrap",
-                      position: "absolute", // Add this line
-                      right: 90 - (healthPercent / 100) * 80 + "%",
+                      backgroundColor: Colors[1],
+                      width: healthPercent + "%",
+                      height: "50px",
+                      float: "left",
+                      marginTop: "0px",
+                      marginBottom: "0px",
+                      marginLeft: "3px",
                     }}
                   >
-                    {health}
-                  </strong>
-                </div>
-                <div
-                  style={{
-                    backgroundColor: Colors[2],
-                    width: drunkennessPercent + "%",
-                    height: "50px",
-                    float: "right",
-                    marginTop: "3px",
-                    marginBottom: "2px",
-                    marginRight: "0",
-                  }}
-                >
-                  <strong
+                    <strong
+                      style={{
+                        whiteSpace: "nowrap",
+                        position: "absolute", // Add this line
+                        right: 90 - (healthPercent / 100) * 80 + "%",
+                        color: Colors[2],
+                      }}
+                    >
+                      {health}
+                    </strong>
+                  </div>
+                  <div
                     style={{
-                      whiteSpace: "nowrap",
-                      position: "absolute", // Add this line
-                      right: (drunkennessPercent / 100) * 90 + 4 + "%",
+                      backgroundColor: Colors[0],
+                      width: drunkennessPercent + "%",
+                      height: "50px",
+                      float: "right",
+                      marginTop: "0px",
+                      marginBottom: "0px",
+                      marginRight: "0",
                     }}
                   >
-                    {drunkenness}
-                  </strong>
+                    <strong
+                      style={{
+                        whiteSpace: "nowrap",
+                        position: "absolute", // Add this line
+                        right: (drunkennessPercent / 100) * 90 + 4 + "%",
+                        color: Colors[2],
+                      }}
+                    >
+                      {drunkenness}
+                    </strong>
+                  </div>
                 </div>
-              </div>
-            )}
-            {bustedBy > 0 && (
-              <div
-                style={{ width: "95%", height: "95%", boxSizing: "border-box" }}
-              >
-                <Textfit
-                  mode="single"
+              )}
+              {bustedBy > 0 && (
+                <div
                   style={{
                     width: "95%",
                     height: "95%",
                     boxSizing: "border-box",
                   }}
                 >
-                  <h1
+                  <Textfit
+                    mode="single"
                     style={{
-                      color: Colors[2],
-                      textAlign: "center",
-                      margin: "0px",
                       width: "95%",
                       height: "95%",
                       boxSizing: "border-box",
                     }}
                   >
-                    Busted by {bustedBy}!
-                  </h1>
-                </Textfit>
+                    <h1
+                      style={{
+                        color: Colors[2],
+                        textAlign: "center",
+                        margin: "0px",
+                        width: "95%",
+                        height: "95%",
+                        boxSizing: "border-box",
+                      }}
+                    >
+                      Busted by {bustedBy}!
+                    </h1>
+                  </Textfit>
+                </div>
+              )}
+            </div>
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <div
+              style={{
+                color: Colors[2],
+                textAlign: "left",
+                fontSize: "18px",
+              }}
+            >
+              Max Health: {maxHealth}
+            </div>
+            <div
+              style={{
+                color: Colors[2],
+                textAlign: "center",
+                fontSize: "18px",
+              }}
+              >
+                playerID: {playerID}
               </div>
-            )}
+            <div
+              style={{
+                color: Colors[2],
+                textAlign: "right",
+                fontSize: "18px",
+              }}
+            >
+              Min Drunkenness: {minDrunkenness}
+            </div>
           </div>
         </div>
       )}
@@ -347,7 +386,7 @@ const PersonalDeckCard = (props) => {
             width: "225px",
             maxHeight: "35px",
             textAlign: "center",
-            borderBottom: "5px groove "+ Colors[1],
+            borderBottom: "5px groove " + Colors[1],
             justifyContent: "center",
             color: Colors[2],
           }}
@@ -359,7 +398,7 @@ const PersonalDeckCard = (props) => {
             src={image}
             alt="image"
             style={{
-              border: "8px double "+ Colors[2],
+              border: "8px double " + Colors[2],
               maxWidth: "80%",
               height: "200px",
               marginTop: "5px",
@@ -376,12 +415,12 @@ const PersonalDeckCard = (props) => {
               height: "150px",
               maxHeight: "150px",
               width: "230px",
-              border: "4px inset "+ Colors[1],
+              border: "4px inset " + Colors[1],
               padding: "2px",
               margin: "5px",
               marginLeft: "7px",
               marginRight: "7px",
-              
+
               color: Colors[2],
               backgroundColor: Colors[3],
             }}
@@ -397,7 +436,7 @@ const PersonalDeckCard = (props) => {
             style={{ maxWidth: "240px", maxHeight: "100px", overflow: "auto" }}
           >
             {
-              <table style={{width: "240px"}}>
+              <table style={{ width: "240px" }}>
                 <tbody>
                   <tr>
                     {stats.map((stat, index) => (
@@ -420,7 +459,11 @@ const PersonalDeckCard = (props) => {
                           style={{ width: "100%", height: "100%" }}
                         >
                           <strong
-                            style={{ fontSize: "14px", textAlign: "center", color: Colors[2]}}
+                            style={{
+                              fontSize: "14px",
+                              textAlign: "center",
+                              color: Colors[2],
+                            }}
                           >
                             {stat.name && stat.name}
                           </strong>
@@ -446,7 +489,11 @@ const PersonalDeckCard = (props) => {
                         <Textfit
                           mode="single"
                           max={14}
-                          style={{ width: "95%", height: "100%", color: Colors[2]}}
+                          style={{
+                            width: "95%",
+                            height: "100%",
+                            color: Colors[2],
+                          }}
                         >
                           {stat.value && stat.value}
                         </Textfit>
