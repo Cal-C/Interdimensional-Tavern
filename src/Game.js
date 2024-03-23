@@ -274,6 +274,11 @@ function checkPlayerValidMoves({G, ctx}, playerChecked) {
 }
 
 function checkValidMove({G, ctx}, playerChecked, cardChecked) {
+    console.log("Checking if player " + playerChecked + " can play card " + cardChecked);
+    if(G.hand[playerChecked] === null) {
+        console.log("Player " + playerChecked + " has no hand");
+        return false;
+    }
     let valid = false;
     let card = Cards.find(card => card.id === G.hand[playerChecked][cardChecked]);
     if(card === undefined) {
@@ -281,10 +286,15 @@ function checkValidMove({G, ctx}, playerChecked, cardChecked) {
         return valid;
     }
     if(card.whenPlayable.includes("Action")) {
-        if(ctx.currentPlayer === playerChecked && ctx.stage === "Action") {
-            valid = true;
+        /*
+        if(ctx.activePlayers[playerChecked]){
+            if(ctx.activePlayers[playerChecked] === "Action") {
+                valid = true;
+            }
         }
+        */
     }
+        
     if(card.whenPlayable.includes("Whenever")){
         valid = true;
     }
@@ -295,7 +305,7 @@ function checkValidMove({G, ctx}, playerChecked, cardChecked) {
         }
 
     }
-    console.log("Card " + cardChecked + " is valid: " + valid);
+    console.log("Card " + card.name + " is valid: " + valid);
     G.handValidity[playerChecked][cardChecked] = valid;
     return valid;
 
@@ -359,18 +369,26 @@ function drawToMaxHandInternal (G, ctx, playerID) {
     checkPlayerValidMoves({G, ctx}, playerID);
 }
 
-function playCard(G, playerID, cardIndex, target = null) {
+function playCard({G, playerID, ctx}, cardIndex, target = null) {
+    checkPlayerValidMoves({G, ctx}, playerID);
+    let cardLegal = checkValidMove({G, playerID}, playerID, cardIndex);
+    
     let card = G.hand[playerID].splice(cardIndex, 1);
-    let cardPlayed = Cards.find(card => card.id === card);
+    let cardPlayed = Cards.find(c => c.id === card[0]);
     if(cardPlayed === undefined) {
-        console.log("Card not found");
+        console.log("Card not found" + card);
+        return INVALID_MOVE;
+    }
+    
+    if(!cardLegal) {
+        console.log("Card not legal" + card);
         return INVALID_MOVE;
     }
 
     if(cardPlayed.playType === "Heal") {
         
         
-        G.drunkenness[playerID] -= cardPlayed.drunkennessDamage;
+        G.drunkenness[playerID] += cardPlayed.drunkennessEffect;
     }
     if(cardPlayed.playType === "SingleTargetAttack") {
 
@@ -378,7 +396,11 @@ function playCard(G, playerID, cardIndex, target = null) {
 
     if(cardPlayed.cashCost) {
         G.cash[playerID] -= cardPlayed.cashCost;
+        //check if player has gone broke once that function is impiemented
     }
+    G.stack.push({cardId: card[0], playedByPlayerId: playerID});
+    console.log("Player " + playerID + " played card " + card[0]);
+    checkPlayerValidMoves({G, ctx}, playerID);
 }
 
 function pass({G, playerID, ctx, events}) {

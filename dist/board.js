@@ -28,7 +28,7 @@ function TavernBoard(props) {
   return /*#__PURE__*/_react.default.createElement("div", null, !isLoaded ? /*#__PURE__*/_react.default.createElement(_reactLoading.default, {
     type: "bars",
     color: "#000000"
-  }) : /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement(Header, props), props.ctx.phase === "characterSelection" && /*#__PURE__*/_react.default.createElement(CharacterSelector, props), props.ctx.phase !== "characterSelection" && /*#__PURE__*/_react.default.createElement(StatusCards, props), props.ctx.phase !== "characterSelection" && /*#__PURE__*/_react.default.createElement(Hand, props)));
+  }) : /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement(Header, props), props.ctx.phase === "characterSelection" && /*#__PURE__*/_react.default.createElement(CharacterSelector, props), props.ctx.phase !== "characterSelection" && /*#__PURE__*/_react.default.createElement(StatusCards, props), props.ctx.phase !== "characterSelection" && /*#__PURE__*/_react.default.createElement(Stack, props), props.ctx.phase !== "characterSelection" && /*#__PURE__*/_react.default.createElement(Hand, props)));
 }
 function Header(_ref) {
   let {
@@ -75,13 +75,76 @@ function StatusCards(_ref2) {
     }
   }, userCards));
 }
-function Hand(_ref3) {
+function Stack(_ref3) {
+  let {
+    G,
+    moves,
+    playerID
+  } = _ref3;
+  return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("h1", null, "Stack"), /*#__PURE__*/_react.default.createElement("div", {
+    style: {
+      display: 'flex',
+      justifyContent: 'left',
+      flexWrap: 'wrap'
+    }
+  }, G.stack.map((card, index) => /*#__PURE__*/_react.default.createElement(DisplayCardinStack, {
+    index: index,
+    cardId: card.cardId,
+    playedByPlayerId: card.playedByPlayerId,
+    G: G,
+    moves: moves,
+    playerID: playerID
+  }))));
+}
+function DisplayCardinStack(_ref4) {
+  let {
+    index,
+    cardId,
+    playedByPlayerId,
+    G,
+    moves,
+    playerID
+  } = _ref4;
+  const card = _Cards.Cards.find(card => card.id === cardId);
+  const cardColor = {
+    "0": "#b30b02",
+    "1": "#215212",
+    "2": "#0c07ad",
+    "3": "#ad07ac",
+    default: "#07aaad"
+  }[playedByPlayerId];
+  return /*#__PURE__*/_react.default.createElement(_CustomCards.PersonalDeckCard, {
+    float: true,
+    name: card.name,
+    description: card.description,
+    style: {
+      liftColor: cardColor
+    },
+    stats: [{
+      name: 'Playable',
+      value: camelToSpaced(card.whenPlayable.join(", "))
+    }, {
+      name: 'Type',
+      value: camelToSpaced(card.playType)
+    }, {
+      name: 'Played By',
+      value: "Player " + playedByPlayerId
+    }],
+    trashing: G.discardingHand[playerID][index],
+    moves: moves,
+    index: index,
+    playerID: playedByPlayerId,
+    Stack: true,
+    G: G
+  });
+}
+function Hand(_ref5) {
   let {
     G,
     ctx,
     moves,
     playerID
-  } = _ref3;
+  } = _ref5;
   return /*#__PURE__*/_react.default.createElement("div", {
     style: {
       backgroundColor: "#D2b48c",
@@ -112,13 +175,13 @@ function Hand(_ref3) {
     moves: moves
   }))));
 }
-function PhaseButtons(_ref4) {
+function PhaseButtons(_ref6) {
   let {
     G,
     ctx,
     moves,
     playerID
-  } = _ref4;
+  } = _ref6;
   return /*#__PURE__*/_react.default.createElement("div", {
     style: {
       display: 'flex',
@@ -140,14 +203,14 @@ function PhaseButtons(_ref4) {
     onClick: () => moves.drawToMaxHand()
   }, "Draw to Max")));
 }
-function DisplayCardinHand(_ref5) {
+function DisplayCardinHand(_ref7) {
   let {
     cardId,
     playerID,
     G,
     index,
     moves
-  } = _ref5;
+  } = _ref7;
   const card = _Cards.Cards.find(card => card.id === cardId);
   const isValid = G.handValidity[playerID][index];
   const cardColor = isValid ? '#76CC76' : '#D75265'; // replace 'green' and 'red' with actual color codes

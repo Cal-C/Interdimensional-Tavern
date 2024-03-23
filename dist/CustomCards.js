@@ -41,13 +41,19 @@ const PersonalDeckCard = props => {
       minWidth: "250px"
     },
     // default values for height and width
-    trashing = false
+    trashing = false,
+    inStack = false
   } = props;
   const handleClick = () => {
-    if (props.G.discarding[props.playerID]) {
-      props.moves.toggleDiscarding(index, playerID); // replace 'moveNameWhenDiscarding' with the name of your move
+    if (props.G.discarding[playerID]) {
+      props.moves.toggleDiscarding(index, playerID);
+      return;
+    }
+    if (inStack) {
+      //allow the player to click the card to counter it with other cards
+      return;
     } else {
-      props.moves.playCard(index, playerID); // replace 'moveNameWhenNotDiscarding' with the name of your move
+      props.moves.playCard(index); // replace 'moveNameWhenNotDiscarding' with the name of your move
     }
   };
   const hoverColor = colorFromPlayable(props);
@@ -117,7 +123,7 @@ const PersonalDeckCard = props => {
     }
   }, description), stats && /*#__PURE__*/_react.default.createElement("div", {
     style: {
-      maxWidth: "225px",
+      maxWidth: "250px",
       maxHeight: "100px",
       overflow: "auto"
     }

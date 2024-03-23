@@ -381,6 +381,11 @@ function checkValidMove(_ref13, playerChecked, cardChecked) {
     G,
     ctx
   } = _ref13;
+  console.log("Checking if player " + playerChecked + " can play card " + cardChecked);
+  if (G.hand[playerChecked] === null) {
+    console.log("Player " + playerChecked + " has no hand");
+    return false;
+  }
   let valid = false;
   let card = _Cards.Cards.find(card => card.id === G.hand[playerChecked][cardChecked]);
   if (card === undefined) {
@@ -388,9 +393,13 @@ function checkValidMove(_ref13, playerChecked, cardChecked) {
     return valid;
   }
   if (card.whenPlayable.includes("Action")) {
-    if (ctx.currentPlayer === playerChecked && ctx.stage === "Action") {
-      valid = true;
+    /*
+    if(ctx.activePlayers[playerChecked]){
+        if(ctx.activePlayers[playerChecked] === "Action") {
+            valid = true;
+        }
     }
+    */
   }
   if (card.whenPlayable.includes("Whenever")) {
     valid = true;
@@ -400,7 +409,7 @@ function checkValidMove(_ref13, playerChecked, cardChecked) {
       valid = false;
     }
   }
-  console.log("Card " + cardChecked + " is valid: " + valid);
+  console.log("Card " + card.name + " is valid: " + valid);
   G.handValidity[playerChecked][cardChecked] = valid;
   return valid;
 }
@@ -472,40 +481,67 @@ function drawToMaxHandInternal(G, ctx, playerID) {
     ctx
   }, playerID);
 }
-function playCard(G, playerID, cardIndex) {
-  let target = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+function playCard(_ref17, cardIndex) {
+  let {
+    G,
+    playerID,
+    ctx
+  } = _ref17;
+  let target = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+  checkPlayerValidMoves({
+    G,
+    ctx
+  }, playerID);
+  let cardLegal = checkValidMove({
+    G,
+    playerID
+  }, playerID, cardIndex);
   let card = G.hand[playerID].splice(cardIndex, 1);
-  let cardPlayed = _Cards.Cards.find(card => card.id === card);
+  let cardPlayed = _Cards.Cards.find(c => c.id === card[0]);
   if (cardPlayed === undefined) {
-    console.log("Card not found");
+    console.log("Card not found" + card);
+    return _core.INVALID_MOVE;
+  }
+  if (!cardLegal) {
+    console.log("Card not legal" + card);
     return _core.INVALID_MOVE;
   }
   if (cardPlayed.playType === "Heal") {
-    G.drunkenness[playerID] -= cardPlayed.drunkennessDamage;
+    G.drunkenness[playerID] += cardPlayed.drunkennessEffect;
   }
   if (cardPlayed.playType === "SingleTargetAttack") {}
   if (cardPlayed.cashCost) {
     G.cash[playerID] -= cardPlayed.cashCost;
+    //check if player has gone broke once that function is impiemented
   }
+  G.stack.push({
+    cardId: card[0],
+    playedByPlayerId: playerID
+  });
+  console.log("Player " + playerID + " played card " + card[0]);
+  checkPlayerValidMoves({
+    G,
+    ctx
+  }, playerID);
 }
-function pass(_ref17) {
+function pass(_ref18) {
   let {
     G,
     playerID,
     ctx,
     events
-  } = _ref17;
+  } = _ref18;
   if (ctx.phase === "End") {
     events.endTurn();
   }
   events.endStage();
   return;
 }
-function setupVariables(_ref18) {
+function setupVariables(_ref19) {
   let {
     G,
     ctx
-  } = _ref18;
+  } = _ref19;
   for (let i = 0; i < ctx.numPlayers; i++) {
     G.characterID[i] = "";
     G.characterShortName[i] = "";
@@ -525,10 +561,10 @@ function setupVariables(_ref18) {
     G.discardingHand[i] = Array(G.maxHandSize).fill(false);
   }
 }
-function consume(_ref19, consumingPlayer) {
+function consume(_ref20, consumingPlayer) {
   let {
     G
-  } = _ref19;
+  } = _ref20;
   let consumedCards = [];
   consumedCards.push(G.consumeDeck[consumingPlayer].pop());
 }

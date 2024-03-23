@@ -31,6 +31,7 @@ export function TavernBoard(props) {
           <Header {...props} />
           {props.ctx.phase === "characterSelection" && <CharacterSelector {...props} />}
           {props.ctx.phase !== "characterSelection" && <StatusCards {...props} />}
+          {props.ctx.phase !== "characterSelection" && <Stack {...props} />}
           {props.ctx.phase !== "characterSelection" && <Hand {...props} />}
         </>
       )}
@@ -81,6 +82,50 @@ function StatusCards({ G, ctx }) {
           {userCards}
         </div>
     </div>
+  );
+}
+
+function Stack({G, moves, playerID}){
+  return (
+    <div>
+      <h1>Stack</h1>
+      <div style={{ display: 'flex', justifyContent: 'left', flexWrap: 'wrap' }}>
+      {G.stack.map((card, index) => (
+        <DisplayCardinStack index={index} cardId={card.cardId} playedByPlayerId={card.playedByPlayerId} G={G} moves={moves} playerID={playerID} />
+      ))}
+      </div>
+    </div>
+  );
+}
+
+function DisplayCardinStack({index, cardId, playedByPlayerId, G, moves, playerID}) {
+  const card = Cards.find(card => card.id === cardId);
+  const cardColor = {
+    "0": "#b30b02",
+    "1": "#215212",
+    "2": "#0c07ad",
+    "3": "#ad07ac",
+    default: "#07aaad"
+  }[playedByPlayerId];
+  return (
+    <PersonalDeckCard
+    float
+    name={card.name}
+    description={card.description}
+    style={{ liftColor : cardColor }}
+    stats = {[
+      {name: 'Playable', value: camelToSpaced(card.whenPlayable.join(", "))},
+      {name: 'Type', value: camelToSpaced(card.playType)},
+      {name: 'Played By', value: "Player " + playedByPlayerId}
+    ]}
+    trashing = {G.discardingHand[playerID][index]}
+    moves = {moves}
+    index = {index}
+    playerID = {playedByPlayerId}
+    Stack = {true}
+    G = {G}
+    />
+
   );
 }
 
@@ -149,6 +194,8 @@ function DisplayCardinHand({cardId, playerID, G, index, moves}) {
     />
   );
 }
+
+
 
 
 const CharacterSelector = (props) => {
