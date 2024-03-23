@@ -227,8 +227,24 @@ const StatusCard = (props) => {
               <div
                 style={{ width: "95%", height: "95%", boxSizing: "border-box" }}
               >
-                <Textfit mode="single" style={{ width: "95%", height: "95%", boxSizing: "border-box" }}>
-                  <h1 style={{ color: Colors[2], textAlign: "center", margin: "0px", width: "95%", height: "95%", boxSizing: "border-box" }}>
+                <Textfit
+                  mode="single"
+                  style={{
+                    width: "95%",
+                    height: "95%",
+                    boxSizing: "border-box",
+                  }}
+                >
+                  <h1
+                    style={{
+                      color: Colors[2],
+                      textAlign: "center",
+                      margin: "0px",
+                      width: "95%",
+                      height: "95%",
+                      boxSizing: "border-box",
+                    }}
+                  >
                     Busted by {bustedBy}!
                   </h1>
                 </Textfit>
@@ -260,6 +276,7 @@ const PersonalDeckCard = (props) => {
     trashing = false,
     inStack = false,
     liftColor = "InHand",
+    Colors,
   } = props;
 
   const handleClick = () => {
@@ -278,6 +295,8 @@ const PersonalDeckCard = (props) => {
   if (liftColor === "InHand") {
     hoverColor = colorFromPlayable(props);
   }
+
+  const statsBoarderString = "2px dotted " + Colors[2];
 
   return (
     <CardBox
@@ -309,7 +328,7 @@ const PersonalDeckCard = (props) => {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "#a06b2d",
+          backgroundColor: Colors[0],
         }}
       >
         <Textfit
@@ -321,8 +340,9 @@ const PersonalDeckCard = (props) => {
             width: "225px",
             maxHeight: "35px",
             textAlign: "center",
-            borderBottom: "5px solid purple",
+            borderBottom: "5px solid "+ Colors[1],
             justifyContent: "center",
+            color: Colors[2],
           }}
         >
           <h1>{name}</h1>
@@ -332,7 +352,7 @@ const PersonalDeckCard = (props) => {
             src={image}
             alt="image"
             style={{
-              border: "8px double black",
+              border: "8px double "+ Colors[2],
               maxWidth: "80%",
               height: "200px",
               marginTop: "5px",
@@ -349,9 +369,12 @@ const PersonalDeckCard = (props) => {
               height: "150px",
               maxHeight: "150px",
               width: "240px",
-              border: "8px double black",
+              border: "8px solid "+ Colors[1],
               marginLeft: "10px",
               marginRight: "10px",
+              margin: "5px",
+              color: Colors[2],
+              backgroundColor: Colors[3],
             }}
           >
             {description}
@@ -362,59 +385,68 @@ const PersonalDeckCard = (props) => {
         }
         {stats && (
           <div
-            style={{ maxWidth: "250px", maxHeight: "100px", overflow: "auto" }}
+            style={{ maxWidth: "240px", maxHeight: "100px", overflow: "auto" }}
           >
-            <table>
-              <tbody>
-                <tr>
-                  {stats.map((stat, index) => (
-                    <td
-                      key={index}
-                      style={{
-                        borderLeft: "2px dotted black",
-                        borderTop: "2px dotted black",
-                        borderRight: "2px dotted black",
-                        textAlign: "center",
-                      }}
-                    >
-                      <Textfit
-                        mode="single"
-                        max={14}
-                        style={{ width: "75px", height: "20px" }}
+            {
+              <table style={{width: "240px"}}>
+                <tbody>
+                  <tr>
+                    {stats.map((stat, index) => (
+                      <td
+                        key={index}
+                        style={{
+                          borderLeft: statsBoarderString,
+                          borderTop: statsBoarderString,
+                          borderRight: statsBoarderString,
+                          textAlign: "center",
+                          width: "40px",
+                          height: "10px",
+                          maxHeight: "20px",
+                          maxWidth: "40px",
+                        }}
                       >
-                        <strong
-                          style={{ fontSize: "14px", textAlign: "center" }}
+                        <Textfit
+                          mode="single"
+                          max={14}
+                          style={{ width: "100%", height: "100%" }}
                         >
-                          {stat.name && stat.name}
-                        </strong>
-                      </Textfit>
-                    </td>
-                  ))}
-                </tr>
-                <tr>
-                  {stats.map((stat, index) => (
-                    <td
-                      key={index}
-                      style={{
-                        fontSize: "14px",
-                        borderLeft: "2px dotted black",
-                        borderBottom: "2px dotted black",
-                        borderRight: "2px dotted black",
-                        textAlign: "center",
-                      }}
-                    >
-                      <Textfit
-                        mode="single"
-                        max={14}
-                        style={{ width: "75px", height: "20px" }}
+                          <strong
+                            style={{ fontSize: "14px", textAlign: "center", color: Colors[2]}}
+                          >
+                            {stat.name && stat.name}
+                          </strong>
+                        </Textfit>
+                      </td>
+                    ))}
+                  </tr>
+                  <tr>
+                    {stats.map((stat, index) => (
+                      <td
+                        key={index}
+                        style={{
+                          fontSize: "14px",
+                          borderLeft: statsBoarderString,
+                          borderBottom: statsBoarderString,
+                          borderRight: statsBoarderString,
+                          textAlign: "center",
+                          width: "40px",
+                          height: "20px",
+                          maxWidth: "40px",
+                        }}
                       >
-                        {stat.value && stat.value}
-                      </Textfit>
-                    </td>
-                  ))}
-                </tr>
-              </tbody>
-            </table>
+                        <Textfit
+                          mode="single"
+                          max={14}
+                          style={{ width: "95%", height: "100%", color: Colors[2]}}
+                        >
+                          {stat.value && stat.value}
+                        </Textfit>
+                      </td>
+                    ))}
+                  </tr>
+                </tbody>
+              </table>
+            }
           </div>
         )}
       </div>

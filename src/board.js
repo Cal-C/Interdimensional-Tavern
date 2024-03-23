@@ -111,7 +111,7 @@ function Stack({G, moves, playerID}){
 
 function DisplayCardinStack({index, cardId, playedByPlayerId, G, moves, playerID}) {
   const card = Cards.find(card => card.id === cardId);
-  const cardColor = {
+  const liftColor = {
     "0": "#b30b02",
     "1": "#215212",
     "2": "#0c07ad",
@@ -124,7 +124,7 @@ function DisplayCardinStack({index, cardId, playedByPlayerId, G, moves, playerID
     float
     name={card.name}
     description={card.description}
-    style={{ liftColor : cardColor }}
+    style={{ liftColor : liftColor }}
     stats = {[
       {name: 'Playable', value: camelToSpaced(card.whenPlayable.join(", "))},
       {name: 'Type', value: camelToSpaced(card.playType)},
@@ -136,7 +136,8 @@ function DisplayCardinStack({index, cardId, playedByPlayerId, G, moves, playerID
     playerID = {playedByPlayerId}
     Stack = {true}
     G = {G}
-    liftColor = {cardColor}
+    liftColor = {liftColor}
+    Colors = {characters[G.characterID[playedByPlayerId]].Colors}
     />
 
   );
@@ -187,14 +188,14 @@ function PhaseButtons({G, ctx, moves, playerID}) {
 function DisplayCardinHand({cardId, playerID, G, index, moves}) {
   const card = Cards.find(card => card.id === cardId);
   const isValid = G.handValidity[playerID][index];
-  const cardColor = isValid ? '#76CC76' : '#D75265'; // replace 'green' and 'red' with actual color codes
+  const liftColor = isValid ? '#76CC76' : '#D75265'; // replace 'green' and 'red' with actual color codes
   const playableEmoji = isValid ? '✅' : '❌';
   return (
     <PersonalDeckCard
     float
     name={card.name}
     description={card.description}
-    style={{ liftColor : cardColor }}
+    style={{ liftColor : liftColor }}
     stats = {[
       {name: 'Playable', value: playableEmoji + " " + camelToSpaced(card.whenPlayable.join(", "))},
       {name: 'Type', value: camelToSpaced(card.playType)},
@@ -204,6 +205,7 @@ function DisplayCardinHand({cardId, playerID, G, index, moves}) {
     index = {index}
     playerID = {playerID}
     G = {G}
+    Colors = {characters[G.characterID[playerID]].Colors}
     />
   );
 }
