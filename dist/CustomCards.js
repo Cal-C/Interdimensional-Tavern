@@ -21,7 +21,7 @@ const CardBox = _ref => {
     className: "cardBox",
     style: {
       ...style,
-      '--hover-color': hoverColor
+      "--hover-color": hoverColor
     },
     onClick: onClick
   }, children);
@@ -33,10 +33,10 @@ const StatusCard = props => {
       Name: "Character Name",
       Cash: 69
     }],
-    health = 69,
-    maxHealth = 69,
-    drunkenness = -69,
-    minDrunkenness = -69,
+    health = 20,
+    maxHealth = 20,
+    drunkenness = 1,
+    minDrunkenness = 0,
     liftColor = "#540a27",
     style = {
       height: "300px",
@@ -52,10 +52,17 @@ const StatusCard = props => {
     console.log("StatusCard " + stats.Name + " clicked. With Colors " + JSON.stringify(Colors));
   };
   let healthBarStatsLoaded = false;
-  let totalHp = maxHealth - minDrunkenness;
-  let healthPercent = (maxHealth - health) / totalHp * 100;
-  let drunkennessPercent = drunkenness / totalHp * 100;
+  let totalHp = 20;
+  let healthPercent = 100;
+  let drunkennessPercent = 0;
+  let bustedBy = 0;
   if (health && maxHealth && drunkenness !== null && minDrunkenness !== null) {
+    totalHp = maxHealth - minDrunkenness;
+    healthPercent = (maxHealth - health) / totalHp * 100;
+    drunkennessPercent = drunkenness / totalHp * 100;
+    if (drunkenness > health) {
+      bustedBy = drunkenness - health;
+    }
     healthBarStatsLoaded = true;
   }
   const statsBoarderString = "4px solid " + Colors[2];
@@ -131,32 +138,77 @@ const StatusCard = props => {
     }
   }, stat.value && stat.value))))))), healthBarStatsLoaded && /*#__PURE__*/_react.default.createElement("div", {
     style: {
-      border: statsBoarderString,
+      border: "4px double " + Colors[2],
       margin: "5px",
-      maxWidth: "100%",
-      maxHeight: "30%"
+      maxWidth: "95%",
+      maxHeight: "30%",
+      overflow: "auto",
+      backgroundColor: Colors[3],
+      justifyContent: "space-between"
     }
   }, /*#__PURE__*/_react.default.createElement("div", {
     style: {
-      backgroundColor: "black",
-      maxWidth: "100%",
-      maxHeight: "30%"
+      backgroundColor: Colors[3],
+      maxWidth: "99.5%",
+      maxHeight: "27%"
     }
-  }, /*#__PURE__*/_react.default.createElement("div", {
+  }, bustedBy === 0 && /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("div", {
     style: {
-      backgroundColor: "red",
+      backgroundColor: Colors[1],
       width: healthPercent + "%",
-      height: "75px",
-      float: "left"
+      height: "50px",
+      float: "left",
+      marginTop: "3px",
+      marginBottom: "3px",
+      marginLeft: "3px"
     }
-  }), /*#__PURE__*/_react.default.createElement("div", {
+  }, /*#__PURE__*/_react.default.createElement("strong", {
     style: {
-      backgroundColor: "blue",
-      width: drunkennessPercent + "%",
-      height: "75px",
-      float: "left"
+      whiteSpace: "nowrap",
+      position: "absolute",
+      // Add this line
+      right: 90 - healthPercent / 100 * 80 + "%"
     }
-  }))));
+  }, health)), /*#__PURE__*/_react.default.createElement("div", {
+    style: {
+      backgroundColor: Colors[2],
+      width: drunkennessPercent + "%",
+      height: "50px",
+      float: "right",
+      marginTop: "3px",
+      marginBottom: "2px",
+      marginRight: "0"
+    }
+  }, /*#__PURE__*/_react.default.createElement("strong", {
+    style: {
+      whiteSpace: "nowrap",
+      position: "absolute",
+      // Add this line
+      right: drunkennessPercent / 100 * 90 + 4 + "%"
+    }
+  }, drunkenness))), bustedBy > 0 && /*#__PURE__*/_react.default.createElement("div", {
+    style: {
+      width: "95%",
+      height: "95%",
+      boxSizing: "border-box"
+    }
+  }, /*#__PURE__*/_react.default.createElement(_reactTextfit.Textfit, {
+    mode: "single",
+    style: {
+      width: "95%",
+      height: "95%",
+      boxSizing: "border-box"
+    }
+  }, /*#__PURE__*/_react.default.createElement("h1", {
+    style: {
+      color: Colors[2],
+      textAlign: "center",
+      margin: "0px",
+      width: "95%",
+      height: "95%",
+      boxSizing: "border-box"
+    }
+  }, "Busted by ", bustedBy, "!"))))));
 };
 exports.StatusCard = StatusCard;
 const PersonalDeckCard = props => {
@@ -205,15 +257,15 @@ const PersonalDeckCard = props => {
     src: _trashcan.default,
     alt: "Trashcan",
     style: {
-      position: 'absolute',
+      position: "absolute",
       top: 0,
       left: 0,
       right: 0,
       bottom: 0,
-      width: '100%',
-      height: '100%',
-      objectFit: 'contain',
-      margin: 'auto',
+      width: "100%",
+      height: "100%",
+      objectFit: "contain",
+      margin: "auto",
       opacity: 0.8
     }
   }), /*#__PURE__*/_react.default.createElement("div", {
@@ -270,7 +322,7 @@ const PersonalDeckCard = props => {
       borderLeft: "2px dotted black",
       borderTop: "2px dotted black",
       borderRight: "2px dotted black",
-      textAlign: 'center'
+      textAlign: "center"
     }
   }, /*#__PURE__*/_react.default.createElement(_reactTextfit.Textfit, {
     mode: "single",
@@ -282,7 +334,7 @@ const PersonalDeckCard = props => {
   }, /*#__PURE__*/_react.default.createElement("strong", {
     style: {
       fontSize: "14px",
-      textAlign: 'center'
+      textAlign: "center"
     }
   }, stat.name && stat.name))))), /*#__PURE__*/_react.default.createElement("tr", null, stats.map((stat, index) => /*#__PURE__*/_react.default.createElement("td", {
     key: index,
@@ -291,7 +343,7 @@ const PersonalDeckCard = props => {
       borderLeft: "2px dotted black",
       borderBottom: "2px dotted black",
       borderRight: "2px dotted black",
-      textAlign: 'center'
+      textAlign: "center"
     }
   }, /*#__PURE__*/_react.default.createElement(_reactTextfit.Textfit, {
     mode: "single",

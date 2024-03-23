@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", {
 exports.TavernBoard = TavernBoard;
 exports.default = void 0;
 var _react = _interopRequireWildcard(require("react"));
-var _reactUiCards = require("react-ui-cards");
 var _characters = require("./characters.js");
 var _Game = require("./Game.js");
 var _Cards = require("./Cards.js");
