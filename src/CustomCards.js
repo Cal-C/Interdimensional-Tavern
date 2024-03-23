@@ -4,15 +4,17 @@ import { Textfit } from "react-textfit";
 import imageDefault from "./images/tonychris.jpg";
 import trashcanImage from "./images/trashcan.png";
 
-import './CustomCards.css';
+import "./CustomCards.css";
 
 const CardBox = ({ children, style, hoverColor, onClick }) => {
   return (
-    <div className="cardBox" style={{
-      ...style,
-      '--hover-color': hoverColor,
-    }}
-    onClick={onClick}
+    <div
+      className="cardBox"
+      style={{
+        ...style,
+        "--hover-color": hoverColor,
+      }}
+      onClick={onClick}
     >
       {children}
     </div>
@@ -23,10 +25,10 @@ const StatusCard = (props) => {
   const {
     image = imageDefault,
     stats = [{ Name: "Character Name", Cash: 69 }],
-    health = 69,
-    maxHealth = 69,
-    drunkenness = -69,
-    minDrunkenness = -69,
+    health = 20,
+    maxHealth = 20,
+    drunkenness = 1,
+    minDrunkenness = 0,
     liftColor = "#540a27",
     style = {
       height: "300px",
@@ -48,10 +50,20 @@ const StatusCard = (props) => {
     );
   };
 
-let healthBarStatsLoaded = false;
-if(health && maxHealth && drunkenness !== null && minDrunkenness !== null) {
-  healthBarStatsLoaded = true;
-}
+  let healthBarStatsLoaded = false;
+  let totalHp = 20;
+  let healthPercent = 100;
+  let drunkennessPercent = 0;
+  let bustedBy = 0;
+  if (health && maxHealth && drunkenness !== null && minDrunkenness !== null) {
+    totalHp = maxHealth - minDrunkenness;
+    healthPercent = ((maxHealth - health) / totalHp) * 100;
+    drunkennessPercent = (drunkenness / totalHp) * 100;
+    if (drunkenness > health) {
+      bustedBy = drunkenness - health;
+    }
+    healthBarStatsLoaded = true;
+  }
 
   const statsBoarderString = "4px solid " + Colors[2];
 
@@ -147,52 +159,81 @@ if(health && maxHealth && drunkenness !== null && minDrunkenness !== null) {
         </div>
       )}
       {healthBarStatsLoaded && (
-        <div>
+        <div
+          style={{
+            border: "4px double " + Colors[2],
+            margin: "5px",
+            maxWidth: "95%",
+            maxHeight: "30%",
+            overflow: "auto",
+            backgroundColor: Colors[3],
+            justifyContent: "space-between",
+          }}
+        >
           <div
             style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: Colors[0],
+              backgroundColor: Colors[3],
+              maxWidth: "99.5%",
+              maxHeight: "27%",
             }}
           >
-            <Textfit
-              mode="single"
-              max={20}
-              style={{
-                width: "225px",
-                height: "40px",
-                color: Colors[2],
-                borderBottom: "4px solid " + Colors[2],
-                textAlign: "center",
-              }}
-            >
-              <strong>Health: {health + "/" + maxHealth}</strong>
-            </Textfit>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: Colors[0],
-            }}
-          >
-            <Textfit
-              mode="single"
-              max={20}
-              style={{
-                width: "225px",
-                height: "40px",
-                color: Colors[2],
-                borderBottom: "4px solid " + Colors[2],
-                textAlign: "center",
-              }}
-            >
-              <strong>Drunkenness: {drunkenness + "/" + minDrunkenness}</strong>
-            </Textfit>
+            {bustedBy === 0 && (
+              <div>
+                <div
+                  style={{
+                    backgroundColor: Colors[1],
+                    width: healthPercent + "%",
+                    height: "50px",
+                    float: "left",
+                    marginTop: "3px",
+                    marginBottom: "3px",
+                    marginLeft: "3px",
+                  }}
+                >
+                  <strong
+                    style={{
+                      whiteSpace: "nowrap",
+                      position: "absolute", // Add this line
+                      right: 90 - (healthPercent / 100) * 80 + "%",
+                    }}
+                  >
+                    {health}
+                  </strong>
+                </div>
+                <div
+                  style={{
+                    backgroundColor: Colors[2],
+                    width: drunkennessPercent + "%",
+                    height: "50px",
+                    float: "right",
+                    marginTop: "3px",
+                    marginBottom: "2px",
+                    marginRight: "0",
+                  }}
+                >
+                  <strong
+                    style={{
+                      whiteSpace: "nowrap",
+                      position: "absolute", // Add this line
+                      right: (drunkennessPercent / 100) * 90 + 4 + "%",
+                    }}
+                  >
+                    {drunkenness}
+                  </strong>
+                </div>
+              </div>
+            )}
+            {bustedBy > 0 && (
+              <div
+                style={{ width: "95%", height: "95%", boxSizing: "border-box" }}
+              >
+                <Textfit mode="single" style={{ width: "95%", height: "95%", boxSizing: "border-box" }}>
+                  <h1 style={{ color: Colors[2], textAlign: "center", margin: "0px", width: "95%", height: "95%", boxSizing: "border-box" }}>
+                    Busted by {bustedBy}!
+                  </h1>
+                </Textfit>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -200,10 +241,7 @@ if(health && maxHealth && drunkenness !== null && minDrunkenness !== null) {
   );
 };
 
-
-
-export{StatusCard};
-
+export { StatusCard };
 
 const PersonalDeckCard = (props) => {
   const {
@@ -213,7 +251,12 @@ const PersonalDeckCard = (props) => {
     stats,
     index,
     image = imageDefault,
-    style = { height: "500px", width: "250px", minHeight: "500px", minWidth: "250px" }, // default values for height and width
+    style = {
+      height: "500px",
+      width: "250px",
+      minHeight: "500px",
+      minWidth: "250px",
+    }, // default values for height and width
     trashing = false,
     inStack = false,
     liftColor = "InHand",
@@ -221,48 +264,52 @@ const PersonalDeckCard = (props) => {
 
   const handleClick = () => {
     if (props.G.discarding[playerID]) {
-      props.moves.toggleDiscarding(index, playerID); 
+      props.moves.toggleDiscarding(index, playerID);
       return;
-    } 
-    if(inStack) {
+    }
+    if (inStack) {
       //allow the player to click the card to counter it with other cards
       return;
     } else {
       props.moves.playCard(index); // replace 'moveNameWhenNotDiscarding' with the name of your move
     }
-};
-let hoverColor = liftColor;
-  if(liftColor === "InHand") {
-   hoverColor = colorFromPlayable(props);
+  };
+  let hoverColor = liftColor;
+  if (liftColor === "InHand") {
+    hoverColor = colorFromPlayable(props);
   }
 
   return (
-    <CardBox style={{...style, position: "relative"}} hoverColor={hoverColor}  onClick={handleClick}>
-        {trashing && (
-  <img 
-    src={trashcanImage} 
-    alt="Trashcan" 
-    style={{
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      width: '100%',
-      height: '100%',
-      objectFit: 'contain',
-      margin: 'auto',
-      opacity: 0.8,
-    }}
-  />
-)}
+    <CardBox
+      style={{ ...style, position: "relative" }}
+      hoverColor={hoverColor}
+      onClick={handleClick}
+    >
+      {trashing && (
+        <img
+          src={trashcanImage}
+          alt="Trashcan"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+            margin: "auto",
+            opacity: 0.8,
+          }}
+        />
+      )}
       <div
         style={{
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor:"#a06b2d",
+          backgroundColor: "#a06b2d",
         }}
       >
         <Textfit
@@ -310,36 +357,56 @@ let hoverColor = liftColor;
             {description}
           </Textfit>
         )}
-        {//this stats section should eventually be replaced with some kind of fancy bar that represents the data, but this should work for now
+        {
+          //this stats section should eventually be replaced with some kind of fancy bar that represents the data, but this should work for now
         }
         {stats && (
-
           <div
             style={{ maxWidth: "250px", maxHeight: "100px", overflow: "auto" }}
           >
-            <table >
+            <table>
               <tbody>
                 <tr>
                   {stats.map((stat, index) => (
-                    <td key={index} style = {{borderLeft: "2px dotted black",  borderTop: "2px dotted black",borderRight: "2px dotted black", textAlign:'center'}}>
+                    <td
+                      key={index}
+                      style={{
+                        borderLeft: "2px dotted black",
+                        borderTop: "2px dotted black",
+                        borderRight: "2px dotted black",
+                        textAlign: "center",
+                      }}
+                    >
                       <Textfit
-                      mode = "single"
-                      max = {14}
-                      style = {{ width: "75px", height: "20px",}}
+                        mode="single"
+                        max={14}
+                        style={{ width: "75px", height: "20px" }}
                       >
-                        <strong style={{fontSize:"14px", textAlign:'center' }}>{stat.name && stat.name}</strong>
+                        <strong
+                          style={{ fontSize: "14px", textAlign: "center" }}
+                        >
+                          {stat.name && stat.name}
+                        </strong>
                       </Textfit>
-                      
                     </td>
                   ))}
                 </tr>
                 <tr>
                   {stats.map((stat, index) => (
-                    <td key={index} style={{fontSize:"14px", borderLeft: "2px dotted black",  borderBottom: "2px dotted black",borderRight: "2px dotted black" , textAlign:'center'}}>
+                    <td
+                      key={index}
+                      style={{
+                        fontSize: "14px",
+                        borderLeft: "2px dotted black",
+                        borderBottom: "2px dotted black",
+                        borderRight: "2px dotted black",
+                        textAlign: "center",
+                      }}
+                    >
                       <Textfit
-                      mode = "single"
-                      max = {14}
-                      style = {{ width: "75px", height: "20px",}}
+                        mode="single"
+                        max={14}
+                        style={{ width: "75px", height: "20px" }}
                       >
                         {stat.value && stat.value}
                       </Textfit>
@@ -356,7 +423,9 @@ let hoverColor = liftColor;
 };
 
 function colorFromPlayable(props) {
-  const playableString = props.stats.find(stat => stat.name === "Playable").value;
+  const playableString = props.stats.find(
+    (stat) => stat.name === "Playable"
+  ).value;
   if (playableString.includes("✅")) {
     return "green";
   } else {

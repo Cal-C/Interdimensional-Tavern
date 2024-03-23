@@ -30,8 +30,8 @@ const StatusCard = props => {
   const {
     image = _tonychris.default,
     stats = [{
-      'Name': 'Character Name',
-      'Cash': 69
+      Name: "Character Name",
+      Cash: 69
     }],
     health = 69,
     maxHealth = 69,
@@ -49,8 +49,16 @@ const StatusCard = props => {
     Colors
   } = props;
   const onClick = () => {
-    console.log("StatusCard " + stats.Name + " clicked");
+    console.log("StatusCard " + stats.Name + " clicked. With Colors " + JSON.stringify(Colors));
   };
+  let healthBarStatsLoaded = false;
+  let totalHp = maxHealth - minDrunkenness;
+  let healthPercent = (maxHealth - health) / totalHp * 100;
+  let drunkennessPercent = drunkenness / totalHp * 100;
+  if (health && maxHealth && drunkenness !== null && minDrunkenness !== null) {
+    healthBarStatsLoaded = true;
+  }
+  const statsBoarderString = "4px solid " + Colors[2];
   return /*#__PURE__*/_react.default.createElement(CardBox, {
     style: {
       ...style,
@@ -71,10 +79,10 @@ const StatusCard = props => {
     src: image,
     alt: "Character Image",
     style: {
-      width: '100%',
-      height: '100px',
-      objectFit: 'contain',
-      margin: 'auto',
+      width: "100%",
+      height: "100px",
+      objectFit: "contain",
+      margin: "auto",
       opacity: 0.8
     }
   })), stats && /*#__PURE__*/_react.default.createElement("div", {
@@ -86,42 +94,69 @@ const StatusCard = props => {
   }, /*#__PURE__*/_react.default.createElement("table", null, /*#__PURE__*/_react.default.createElement("tbody", null, /*#__PURE__*/_react.default.createElement("tr", null, stats.map((stat, index) => /*#__PURE__*/_react.default.createElement("td", {
     key: index,
     style: {
-      borderLeft: "2px dotted black",
-      borderTop: "2px dotted black",
-      borderRight: "2px dotted black",
-      textAlign: 'center'
+      borderLeft: statsBoarderString,
+      borderTop: statsBoarderString,
+      borderRight: statsBoarderString,
+      textAlign: "center"
     }
   }, /*#__PURE__*/_react.default.createElement(_reactTextfit.Textfit, {
     mode: "single",
     max: 28,
     style: {
       width: "75px",
-      height: "40px",
-      color: Colors[2]
+      height: "40px"
     }
   }, /*#__PURE__*/_react.default.createElement("strong", {
     style: {
       fontSize: "14px",
-      textAlign: 'center',
+      textAlign: "center",
       color: Colors[2]
     }
   }, stat.name && stat.name))))), /*#__PURE__*/_react.default.createElement("tr", null, stats.map((stat, index) => /*#__PURE__*/_react.default.createElement("td", {
     key: index,
     style: {
       fontSize: "14px",
-      borderLeft: "2px dotted black",
-      borderBottom: "2px dotted black",
-      borderRight: "2px dotted black",
-      textAlign: 'center'
+      borderLeft: statsBoarderString,
+      borderBottom: statsBoarderString,
+      borderRight: statsBoarderString,
+      textAlign: "center"
     }
-  }, /*#__PURE__*/_react.default.createElement(_reactTextfit.Textfit, {
+  }, " ", /*#__PURE__*/_react.default.createElement(_reactTextfit.Textfit, {
     mode: "single",
     max: 20,
     style: {
       width: "75px",
-      height: "40px"
+      height: "40px",
+      color: Colors[2]
     }
-  }, stat.value && stat.value))))))));
+  }, stat.value && stat.value))))))), healthBarStatsLoaded && /*#__PURE__*/_react.default.createElement("div", {
+    style: {
+      border: statsBoarderString,
+      margin: "5px",
+      maxWidth: "100%",
+      maxHeight: "30%"
+    }
+  }, /*#__PURE__*/_react.default.createElement("div", {
+    style: {
+      backgroundColor: "black",
+      maxWidth: "100%",
+      maxHeight: "30%"
+    }
+  }, /*#__PURE__*/_react.default.createElement("div", {
+    style: {
+      backgroundColor: "red",
+      width: healthPercent + "%",
+      height: "75px",
+      float: "left"
+    }
+  }), /*#__PURE__*/_react.default.createElement("div", {
+    style: {
+      backgroundColor: "blue",
+      width: drunkennessPercent + "%",
+      height: "75px",
+      float: "left"
+    }
+  }))));
 };
 exports.StatusCard = StatusCard;
 const PersonalDeckCard = props => {

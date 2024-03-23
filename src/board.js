@@ -73,10 +73,12 @@ function StatusCards({ G, ctx }) {
             { name: 'Name', value: G.characterShortName[i] },
             { name: 'Cash', value: G.cash[i] },
           ]}
+          
           health={G.health[i]}
           maxHealth={G.maxHealth[i]}
           drunkenness={G.drunkenness[i]}
           minDrunkenness={G.minDrunkenness[i]}
+          
           liftColor={characters[G.characterID[i]].Colors[1]}
           G={G}
           ctx={ctx}

@@ -13,6 +13,6 @@ export const characters = [
                 "G3","G3","G3","G3","G3","G3",
                 "G4","G4","G4","G4","G4","G4"],
         cash : 20,
-        Colors: ["#850c0c", "#c6cf44", "#f6f4e0",]
+        Colors: ["#850c0c", "#c6cf44", "#f6f4e0", '#965555']
     }
 ]
