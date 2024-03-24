@@ -401,16 +401,21 @@ function drawToMaxHandInternal (G, ctx, playerID) {
     checkPlayerValidMoves({G, ctx}, playerID);
 }
 
-function makeToast({G, playerID}, message) {
-    G.activeToasts[playerID].push({
+function makeToast({G}, forPlayer , message, type = "default") {
+    if (!G.activeToasts[forPlayer]) {
+        G.activeToasts[forPlayer] = [];
+    }
+    G.activeToasts[forPlayer].push({
         message: message,
         id: G.toastNumber,
+        type: type,
     });
     G.toastNumber++;
 }
 
 function playCard({G, playerID, ctx}, cardIndex, target = null) {
     checkPlayerValidMoves({G, ctx}, playerID);
+    let healed = 0;
     let cardLegal = checkValidMove({G, playerID}, playerID, cardIndex);
 
     let card = G.hand[playerID].splice(cardIndex, 1);
@@ -428,15 +433,21 @@ function playCard({G, playerID, ctx}, cardIndex, target = null) {
     if(cardPlayed.playType === "Heal") {
         if(target === null) { 
             target = playerID;
-           makeToast({G, playerID}, "Healing self, since no target was selected.");
+           makeToast({G}, target,"Healing self, since no target was selected.", "warn");
         }
     }
     if(cardPlayed.playType === "SingleTargetAttack") {
         if(target === null) { return INVALID_MOVE; }
     }
-    if(cardPlayed.drunkennessEffect){G.drunkenness[target] += cardPlayed.drunkennessEffect;}
+    if(cardPlayed.drunkennessEffect){
+        G.drunkenness[target] += cardPlayed.drunkennessEffect;
+        healed -= cardPlayed.drunkennessEffect;
+    }
         
-    if(cardPlayed.healthEffect){G.health[target] += cardPlayed.healthEffect};
+    if(cardPlayed.healthEffect){
+        G.health[target] += cardPlayed.healthEffect
+        healed += cardPlayed.healthEffect;
+    };
 
 
     if(G.health[target] > G.maxHealth[target]) {
@@ -452,6 +463,9 @@ function playCard({G, playerID, ctx}, cardIndex, target = null) {
     }
     G.stack.push({cardId: card[0], playedByPlayerId: playerID});
     console.log("Player " + playerID + " played card " + card[0]);
+    if(healed > 0) {
+        makeToast({G}, target , "Healed for " + healed, "success");
+    }
     checkPlayerValidMoves({G, ctx}, playerID);
 }
 

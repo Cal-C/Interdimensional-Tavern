@@ -489,14 +489,18 @@ function drawToMaxHandInternal(G, ctx, playerID) {
     ctx
   }, playerID);
 }
-function makeToast(_ref18, message) {
+function makeToast(_ref18, forPlayer, message) {
   let {
-    G,
-    playerID
+    G
   } = _ref18;
-  G.activeToasts[playerID].push({
+  let type = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "default";
+  if (!G.activeToasts[forPlayer]) {
+    G.activeToasts[forPlayer] = [];
+  }
+  G.activeToasts[forPlayer].push({
     message: message,
-    id: G.toastNumber
+    id: G.toastNumber,
+    type: type
   });
   G.toastNumber++;
 }
@@ -511,6 +515,7 @@ function playCard(_ref19, cardIndex) {
     G,
     ctx
   }, playerID);
+  let healed = 0;
   let cardLegal = checkValidMove({
     G,
     playerID
@@ -529,9 +534,8 @@ function playCard(_ref19, cardIndex) {
     if (target === null) {
       target = playerID;
       makeToast({
-        G,
-        playerID
-      }, "Healing self, since no target was selected.");
+        G
+      }, target, "Healing self, since no target was selected.", "warn");
     }
   }
   if (cardPlayed.playType === "SingleTargetAttack") {
@@ -541,9 +545,11 @@ function playCard(_ref19, cardIndex) {
   }
   if (cardPlayed.drunkennessEffect) {
     G.drunkenness[target] += cardPlayed.drunkennessEffect;
+    healed -= cardPlayed.drunkennessEffect;
   }
   if (cardPlayed.healthEffect) {
     G.health[target] += cardPlayed.healthEffect;
+    healed += cardPlayed.healthEffect;
   }
   ;
   if (G.health[target] > G.maxHealth[target]) {
@@ -561,6 +567,11 @@ function playCard(_ref19, cardIndex) {
     playedByPlayerId: playerID
   });
   console.log("Player " + playerID + " played card " + card[0]);
+  if (healed > 0) {
+    makeToast({
+      G
+    }, target, "Healed for " + healed, "healed for");
+  }
   checkPlayerValidMoves({
     G,
     ctx
