@@ -40,7 +40,7 @@ function App() {
         <GameClient playerID={selectedPlayerID} />
       )}
       <br />
-      <small> trashcan art by Ilham Fitrotul Hayat</small>
+      <small>Coding and Game Design by Cal Crompton| Trashcan art by Ilham Fitrotul Hayat | Target by Tomas Knop</small>
     </div>
   );
 }

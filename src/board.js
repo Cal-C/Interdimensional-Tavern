@@ -65,17 +65,12 @@ function Header({ctx, playerID}) {
 }
 
 
-function StatusCards({ G, ctx }) {
-  console.log('G:', G);
-  console.log('ctx:', ctx);
+function StatusCards({ G, ctx, moves, playerID }) {
 
   const statusCards = [];
   for (let i = 0; i < ctx.numPlayers; i++) {
-    console.log('i:', i);
-    console.log('G.characterID[i]:', G.characterID[i]);
 
     if (isNotNullOrUndefined(G.characterID[i])) {
-      console.log('characters[G.characterID[i]].liftColor:', characters[G.characterID[i]].liftColor);
 
       statusCards.push(
         <StatusCard
@@ -90,18 +85,19 @@ function StatusCards({ G, ctx }) {
           drunkenness={G.drunkenness[i]}
           minDrunkenness={G.minDrunkenness[i]}
           playerID={i}
+          moves={moves}
           
           liftColor={characters[G.characterID[i]].Colors[1]}
           G={G}
           ctx={ctx}
           Colors = {characters[G.characterID[i]].Colors}
           style={{ height: "300px", width: "450px", minHeight: "300px", minWidth: "450px" }}
+          targeted={G.targetingPlayer[playerID][i]}
         />
       );
     }
   }
 
-  console.log('statusCards:', statusCards);
   return (
     <div style={{ 
       display: 'flex', 
@@ -234,9 +230,7 @@ function DisplayCardinHand({cardId, playerID, G, index, moves}) {
 
 
 const CharacterSelector = (props) => {
-  useEffect(() => {
-    console.log('CharacterSelector rendered');
-  });
+  
 
   return (
     <div>

@@ -27,7 +27,16 @@ function App() {
   const [selectedPlayerID, setSelectedPlayerID] = (0, _react.useState)(null);
   return /*#__PURE__*/_react.default.createElement("div", {
     className: "App"
-  }, /*#__PURE__*/_react.default.createElement("h1", null, "Interdimensional Tavern"), selectedPlayerID === null ? /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement("button", {
+  }, /*#__PURE__*/_react.default.createElement("h1", {
+    style: {
+      color: "#9d5e2b",
+      backgroundColor: "#4d2204",
+      textAlign: "center",
+      border: "5px offset #170d05",
+      textShadow: "0 0 3px #77d778, 0 0 10px #77d778",
+      fontFamily: "Copperplate, fantasy,"
+    }
+  }, "Interdimensional Tavern"), selectedPlayerID === null ? /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement("button", {
     onClick: () => setSelectedPlayerID('0')
   }, "Select Player 0"), /*#__PURE__*/_react.default.createElement("button", {
     onClick: () => setSelectedPlayerID('1')
@@ -37,6 +46,6 @@ function App() {
     onClick: () => setSelectedPlayerID('3')
   }, "Select Player 3")) : /*#__PURE__*/_react.default.createElement(GameClient, {
     playerID: selectedPlayerID
-  }), /*#__PURE__*/_react.default.createElement("br", null), /*#__PURE__*/_react.default.createElement("small", null, " trashcan art by Ilham Fitrotul Hayat"));
+  }), /*#__PURE__*/_react.default.createElement("br", null), /*#__PURE__*/_react.default.createElement("small", null, "Coding and Game Design by Cal Crompton| Trashcan art by Ilham Fitrotul Hayat | Target by Tomas Knop"));
 }
 var _default = exports.default = App;

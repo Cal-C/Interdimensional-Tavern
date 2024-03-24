@@ -3,6 +3,7 @@ import { Textfit } from "react-textfit";
 
 import imageDefault from "./images/tonychris.jpg";
 import trashcanImage from "./images/trashcan.png";
+import targetImage from "./images/target.png";
 
 import "./CustomCards.css";
 
@@ -40,15 +41,27 @@ const StatusCard = (props) => {
     ctx,
     Colors,
     playerID,
+    moves,
+    targeted,
   } = props;
 
   const onClick = () => {
-    console.log(
-      "StatusCard " +
-        stats.Name +
-        " clicked. With Colors " +
-        JSON.stringify(Colors)
-    );
+    if(stats[0].value){
+      console.log(
+        "Status Card " +
+        stats[0].value +
+          " clicked. With ID " + playerID
+      );
+    }
+    else{
+      console.log(
+        "StatusCard " +
+          stats[0].value +
+          " clicked. With ID " + playerID
+      );
+    }
+    
+    moves.targetPlayer(playerID);
   };
 
   let healthBarStatsLoaded = false;
@@ -79,6 +92,24 @@ const StatusCard = (props) => {
       hoverColor={liftColor}
       onClick={onClick}
     >
+      {targeted && (
+        <img
+          src={targetImage}
+          alt="Target"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+            margin: "auto",
+            opacity: 0.8,
+          }}
+        />
+      )}
       <div
         style={{
           display: "flex",
@@ -285,7 +316,7 @@ const StatusCard = (props) => {
                 fontSize: "18px",
               }}
               >
-                playerID: {playerID}
+                Player ID: {playerID}
               </div>
             <div
               style={{

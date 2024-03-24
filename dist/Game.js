@@ -40,20 +40,23 @@ const iTavernGame = exports.iTavernGame = {
       maxHealth: {},
       minDrunkenness: {},
       cash: {},
-      personalDeck: {}
+      personalDeck: {},
+      targetingPlayer: {}
     };
   },
   moves: {
-    chooseCharacter,
-    drawToMaxHand,
+    //moves for specific phases
+    //discard
+    discardSelection,
     startDiscarding,
     stopDiscarding,
     toggleDiscarding,
-    discard,
+    //draw
+    drawToMaxHand,
+    //universal moves
     playCard,
     pass,
-    consume,
-    discardSelection
+    targetPlayer
   },
   phases: {
     characterSelection: {
@@ -110,116 +113,119 @@ const iTavernGame = exports.iTavernGame = {
         }
       },
       maxMoves: 1
-    }
-  },
-  turn: {
-    order: _core.TurnOrder.DEFAULT,
-    onBegin: (G, ctx) => {
-      console.log("Starting turn for player " + ctx.currentPlayer);
     },
-    onEnd: (G, ctx) => {
-      console.log("Ending turn for player " + ctx.currentPlayer);
-    },
-    stages: {
-      React: {
-        moves: {
-          playCard,
-          pass
-        },
-        next: "React",
-        onBegin: (G, ctx) => {
-          checkAllValidMoves({
-            G,
-            ctx
-          });
-          console.log("Starting react stage");
-        }
+    turn: {
+      order: _core.TurnOrder.DEFAULT,
+      onBegin: (G, ctx) => {
+        console.log("Starting turn for player " + ctx.currentPlayer);
       },
-      Discard: {
-        moves: {
-          discardSelection,
-          startDiscarding,
-          stopDiscarding,
-          toggleDiscarding,
-          pass,
-          playCard
-        },
-        next: "Draw",
-        onBegin: (G, ctx) => {
-          checkAllValidMoves({
-            G,
-            ctx
-          });
-          console.log("Starting discard stage");
-        }
+      onEnd: (G, ctx) => {
+        console.log("Ending turn for player " + ctx.currentPlayer);
       },
-      Draw: {
-        moves: {
-          drawToMaxHand,
-          pass,
-          playCard
+      stages: {
+        React: {
+          moves: {
+            playCard,
+            pass
+          },
+          next: "React",
+          onBegin: (G, ctx) => {
+            checkAllValidMoves({
+              G,
+              ctx
+            });
+            console.log("Starting react stage");
+          }
         },
-        next: "Action",
-        onBegin: (G, ctx) => {
-          checkAllValidMoves({
-            G,
-            ctx
-          });
-          console.log("Starting draw stage");
-        }
-      },
-      Action: {
-        moves: {
-          playCard,
-          pass
+        Discard: {
+          moves: {
+            discardSelection,
+            startDiscarding,
+            stopDiscarding,
+            toggleDiscarding,
+            pass,
+            //playCard,
+            targetPlayer
+          },
+          next: "Draw",
+          onBegin: (G, ctx) => {
+            checkAllValidMoves({
+              G,
+              ctx
+            });
+            console.log("Starting discard stage");
+          }
         },
-        next: "Buy",
-        onBegin: (G, ctx) => {
-          checkAllValidMoves({
-            G,
-            ctx
-          });
-          console.log("Starting action stage");
-        }
-      },
-      Buy: {
-        moves: {
-          pass
+        Draw: {
+          moves: {
+            drawToMaxHand,
+            pass,
+            //playCard,
+            targetPlayer
+          },
+          next: "Action",
+          onBegin: (G, ctx) => {
+            checkAllValidMoves({
+              G,
+              ctx
+            });
+            console.log("Starting draw stage");
+          }
         },
-        next: "Consume",
-        onBegin: (G, ctx) => {
-          checkAllValidMoves({
-            G,
-            ctx
-          });
-          console.log("Starting buy stage");
-        }
-      },
-      Consume: {
-        moves: {
-          consume,
-          pass
+        Action: {
+          moves: {
+            //playCard, 
+            pass,
+            targetPlayer
+          },
+          next: "Buy",
+          onBegin: (G, ctx) => {
+            checkAllValidMoves({
+              G,
+              ctx
+            });
+            console.log("Starting action stage");
+          }
         },
-        next: "End",
-        onBegin: (G, ctx) => {
-          checkAllValidMoves({
-            G,
-            ctx
-          });
-          console.log("Starting consume stage");
-        }
-      },
-      End: {
-        moves: {
-          pass
+        Buy: {
+          moves: {
+            pass
+          },
+          next: "Consume",
+          onBegin: (G, ctx) => {
+            checkAllValidMoves({
+              G,
+              ctx
+            });
+            console.log("Starting buy stage");
+          }
         },
-        next: "Draw",
-        onBegin: (G, ctx) => {
-          checkAllValidMoves({
-            G,
-            ctx
-          });
-          console.log("Starting end stage");
+        Consume: {
+          moves: {
+            consume,
+            pass
+          },
+          next: "End",
+          onBegin: (G, ctx) => {
+            checkAllValidMoves({
+              G,
+              ctx
+            });
+            console.log("Starting consume stage");
+          }
+        },
+        End: {
+          moves: {
+            pass
+          },
+          next: "Draw",
+          onBegin: (G, ctx) => {
+            checkAllValidMoves({
+              G,
+              ctx
+            });
+            console.log("Starting end stage");
+          }
         }
       }
     }
@@ -507,23 +513,30 @@ function playCard(_ref17, cardIndex) {
     return _core.INVALID_MOVE;
   }
   if (cardPlayed.playType === "Heal") {
-    if (cardPlayed.drunkennessEffect) {
-      G.drunkenness[playerID] += cardPlayed.drunkennessEffect;
-    }
-    if (cardPlayed.healthEffect) {
-      G.health[playerID] += cardPlayed.healthEffect;
-    }
-    ;
-    if (G.health[playerID] > G.maxHealth[playerID]) {
-      G.health[playerID] = G.maxHealth[playerID];
-    }
-    if (G.drunkenness[playerID] < G.minDrunkenness[playerID]) {
-      G.drunkenness[playerID] = G.minDrunkenness[playerID];
+    if (target === null) {
+      target = playerID;
     }
   }
-  if (cardPlayed.playType === "SingleTargetAttack") {}
-  if (cardPlayed.cashEffect) {
-    G.cash[playerID] += cardPlayed.cashEffect;
+  if (cardPlayed.playType === "SingleTargetAttack") {
+    if (target === null) {
+      return _core.INVALID_MOVE;
+    }
+  }
+  if (cardPlayed.drunkennessEffect) {
+    G.drunkenness[target] += cardPlayed.drunkennessEffect;
+  }
+  if (cardPlayed.healthEffect) {
+    G.health[target] += cardPlayed.healthEffect;
+  }
+  ;
+  if (G.health[target] > G.maxHealth[target]) {
+    G.health[target] = G.maxHealth[target];
+  }
+  if (G.drunkenness[target] < G.minDrunkenness[target]) {
+    G.drunkenness[target] = G.minDrunkenness[target];
+  }
+  if (cardPlayed.cashCost) {
+    G.cash[playerID] += cardPlayed.cashCost;
     //check if player has gone broke once that function is implemented
   }
   G.stack.push({
@@ -571,6 +584,10 @@ function setupVariables(_ref19) {
     G.discardDeck[i] = [];
     G.discarding[i] = false;
     G.discardingHand[i] = Array(G.maxHandSize).fill(false);
+    G.targetingPlayer[i] = {};
+    for (let j = 0; j < ctx.numPlayers; j++) {
+      G.targetingPlayer[i][j] = false;
+    }
   }
 }
 function consume(_ref20, consumingPlayer) {
@@ -579,4 +596,11 @@ function consume(_ref20, consumingPlayer) {
   } = _ref20;
   let consumedCards = [];
   consumedCards.push(G.consumeDeck[consumingPlayer].pop());
+}
+function targetPlayer(_ref21, targetPlayerID) {
+  let {
+    G,
+    playerID
+  } = _ref21;
+  G.targetingPlayer[playerID][targetPlayerID] = !G.targetingPlayer[playerID][targetPlayerID];
 }

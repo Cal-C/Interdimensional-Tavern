@@ -34,23 +34,32 @@ function Header(_ref) {
     ctx,
     playerID
   } = _ref;
-  return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("h1", null, "Board for player ", playerID), /*#__PURE__*/_react.default.createElement("h2", null, "Phase: ", ctx.phase, ", Turn for Player: ", ctx.currentPlayer), ctx.activePlayers && playerID in ctx.activePlayers && /*#__PURE__*/_react.default.createElement("h2", null, "My Stage: ", ctx.activePlayers[playerID]));
+  let basicInformationString = "Board for player " + playerID + ", Phase: " + ctx.phase + ", Turn for Player: " + ctx.currentPlayer;
+  if (ctx.activePlayers && playerID in ctx.activePlayers) {
+    basicInformationString += ", My Stage: " + ctx.activePlayers[playerID];
+  } else {
+    basicInformationString += ", Not In a Stage";
+  }
+  return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("h2", {
+    style: {
+      backgroundColor: "#2b2b62",
+      color: "#f6f4e0",
+      border: "5px solid #470b78",
+      marginBottom: "5px",
+      textAlign: "center"
+    }
+  }, basicInformationString));
 }
 function StatusCards(_ref2) {
   let {
     G,
-    ctx
+    ctx,
+    moves
   } = _ref2;
-  console.log('G:', G);
-  console.log('ctx:', ctx);
   const statusCards = [];
   for (let i = 0; i < ctx.numPlayers; i++) {
-    console.log('i:', i);
-    console.log('G.characterID[i]:', G.characterID[i]);
     if (isNotNullOrUndefined(G.characterID[i])) {
-      console.log('characters[G.characterID[i]].liftColor:', _characters.characters[G.characterID[i]].liftColor);
       statusCards.push( /*#__PURE__*/_react.default.createElement(_CustomCards.StatusCard, {
-        key: i,
         name: G.characterLongName[i],
         stats: [{
           name: 'Name',
@@ -63,6 +72,8 @@ function StatusCards(_ref2) {
         maxHealth: G.maxHealth[i],
         drunkenness: G.drunkenness[i],
         minDrunkenness: G.minDrunkenness[i],
+        playerID: i,
+        moves: moves,
         liftColor: _characters.characters[G.characterID[i]].Colors[1],
         G: G,
         ctx: ctx,
@@ -76,11 +87,14 @@ function StatusCards(_ref2) {
       }));
     }
   }
-  console.log('statusCards:', statusCards);
   return /*#__PURE__*/_react.default.createElement("div", {
     style: {
       display: 'flex',
-      justifyContent: 'space-around'
+      justifyContent: 'space-around',
+      flexWrap: 'wrap',
+      backgroundColor: "#2b2b62",
+      border: "5px solid #470b78",
+      marginBottom: "5px"
     }
   }, statusCards);
 }
@@ -260,9 +274,6 @@ function DisplayCardinHand(_ref7) {
   });
 }
 const CharacterSelector = props => {
-  (0, _react.useEffect)(() => {
-    console.log('CharacterSelector rendered');
-  });
   return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("h1", null, "Choose your character"), /*#__PURE__*/_react.default.createElement("ul", null, _characters.characters.map((character, index) => /*#__PURE__*/_react.default.createElement("li", {
     key: index
   }, /*#__PURE__*/_react.default.createElement("button", {

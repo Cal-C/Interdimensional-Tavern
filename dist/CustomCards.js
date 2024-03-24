@@ -34,9 +34,9 @@ const StatusCard = props => {
       Cash: 69
     }],
     health = 20,
-    maxHealth = 20,
-    drunkenness = 1,
-    minDrunkenness = 0,
+    maxHealth = 25,
+    drunkenness = 5,
+    minDrunkenness = -2,
     liftColor = "#540a27",
     style = {
       height: "300px",
@@ -46,10 +46,17 @@ const StatusCard = props => {
     },
     G,
     ctx,
-    Colors
+    Colors,
+    playerID,
+    moves
   } = props;
   const onClick = () => {
-    console.log("StatusCard " + stats.Name + " clicked. With Colors " + JSON.stringify(Colors));
+    if (stats[0].value) {
+      console.log("Status Card " + stats[0].value + " clicked. With ID " + playerID);
+    } else {
+      console.log("StatusCard " + stats[0].value + " clicked. With ID " + playerID);
+    }
+    moves.targetPlayer(playerID);
   };
   let healthBarStatsLoaded = false;
   let totalHp = 20;
@@ -65,12 +72,13 @@ const StatusCard = props => {
     }
     healthBarStatsLoaded = true;
   }
-  const statsBoarderString = "4px solid " + Colors[3];
+  const statsBoarderString = "4px groove " + Colors[3];
   return /*#__PURE__*/_react.default.createElement(CardBox, {
     style: {
       ...style,
       position: "relative",
-      backgroundColor: Colors[0]
+      backgroundColor: Colors[0],
+      border: "5px groove " + Colors[1]
     },
     hoverColor: liftColor,
     onClick: onClick
@@ -139,7 +147,7 @@ const StatusCard = props => {
       height: "40px",
       color: Colors[2]
     }
-  }, stat.value && stat.value))))))), healthBarStatsLoaded && /*#__PURE__*/_react.default.createElement("div", {
+  }, stat.value && stat.value))))))), healthBarStatsLoaded && /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("div", {
     style: {
       border: "4px inset " + Colors[1],
       margin: "5px",
@@ -161,8 +169,8 @@ const StatusCard = props => {
       width: healthPercent + "%",
       height: "50px",
       float: "left",
-      marginTop: "3px",
-      marginBottom: "3px",
+      marginTop: "0px",
+      marginBottom: "0px",
       marginLeft: "3px"
     }
   }, /*#__PURE__*/_react.default.createElement("strong", {
@@ -170,16 +178,17 @@ const StatusCard = props => {
       whiteSpace: "nowrap",
       position: "absolute",
       // Add this line
-      right: 90 - healthPercent / 100 * 80 + "%"
+      right: 90 - healthPercent / 100 * 80 + "%",
+      color: Colors[2]
     }
   }, health)), /*#__PURE__*/_react.default.createElement("div", {
     style: {
-      backgroundColor: Colors[2],
+      backgroundColor: Colors[0],
       width: drunkennessPercent + "%",
       height: "50px",
       float: "right",
-      marginTop: "3px",
-      marginBottom: "2px",
+      marginTop: "0px",
+      marginBottom: "0px",
       marginRight: "0"
     }
   }, /*#__PURE__*/_react.default.createElement("strong", {
@@ -187,7 +196,8 @@ const StatusCard = props => {
       whiteSpace: "nowrap",
       position: "absolute",
       // Add this line
-      right: drunkennessPercent / 100 * 90 + 4 + "%"
+      right: drunkennessPercent / 100 * 90 + 4 + "%",
+      color: Colors[2]
     }
   }, drunkenness))), bustedBy > 0 && /*#__PURE__*/_react.default.createElement("div", {
     style: {
@@ -211,7 +221,30 @@ const StatusCard = props => {
       height: "95%",
       boxSizing: "border-box"
     }
-  }, "Busted by ", bustedBy, "!"))))));
+  }, "Busted by ", bustedBy, "!"))))), /*#__PURE__*/_react.default.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between"
+    }
+  }, /*#__PURE__*/_react.default.createElement("div", {
+    style: {
+      color: Colors[2],
+      textAlign: "left",
+      fontSize: "18px"
+    }
+  }, "Max Health: ", maxHealth), /*#__PURE__*/_react.default.createElement("div", {
+    style: {
+      color: Colors[2],
+      textAlign: "center",
+      fontSize: "18px"
+    }
+  }, "Player ID: ", playerID), /*#__PURE__*/_react.default.createElement("div", {
+    style: {
+      color: Colors[2],
+      textAlign: "right",
+      fontSize: "18px"
+    }
+  }, "Min Drunkenness: ", minDrunkenness))));
 };
 exports.StatusCard = StatusCard;
 const PersonalDeckCard = props => {
