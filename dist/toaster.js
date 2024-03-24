@@ -23,27 +23,20 @@ function Toaster(props) {
   // Check if activeToasts is an array
   if (Array.isArray(activeToasts)) {
     // Iterate over activeToasts and create a toast for each one
-    activeToasts.forEach((toastMessage, index) => {
-      const now = new Date();
-
-      // Extract the hours, minutes, seconds, and milliseconds
-      const minutes = now.getMinutes();
-      const seconds = now.getSeconds();
-
-      // Create a unique ID for each toast based on its message and the current time
-      const toastId = "".concat(toastMessage, "-").concat(index, "-").concat(seconds);
+    activeToasts.forEach((toastObj, index) => {
+      const toastId = toastObj.id;
 
       // Only create a new toast if there isn't one with the same ID already displayed
-      if (!_reactToastify.toast.isActive(toastId)) {
-        (0, _reactToastify.toast)(toastMessage, {
+      if (!_reactToastify.toast.isActive(toastObj.id)) {
+        (0, _reactToastify.toast)(toastObj.message, {
           toastId,
           onClose: () => {
-            console.log("Toast with ID ".concat(toastId, " has been closed."));
+            console.log("Toast with ID ".concat(toastObj.id, " has been closed."));
             // Call the move function to remove the toast
-            moves.removeToast(toastMessage);
+            moves.removeToast(toastObj);
           }
         });
-        console.log("toasting " + toastMessage);
+        console.log("toasting " + toastObj.message);
       }
     });
   }

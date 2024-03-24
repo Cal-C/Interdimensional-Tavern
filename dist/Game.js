@@ -42,7 +42,8 @@ const iTavernGame = exports.iTavernGame = {
       cash: {},
       personalDeck: {},
       targetingPlayer: {},
-      activeToasts: {}
+      activeToasts: {},
+      toastNumber: 0
     };
   },
   moves: {
@@ -146,7 +147,6 @@ const iTavernGame = exports.iTavernGame = {
             stopDiscarding,
             toggleDiscarding,
             pass,
-            //playCard,
             targetPlayer
           },
           next: "Draw",
@@ -161,8 +161,6 @@ const iTavernGame = exports.iTavernGame = {
         Draw: {
           moves: {
             drawToMaxHand,
-            pass,
-            //playCard,
             targetPlayer
           },
           next: "Action",
@@ -176,7 +174,6 @@ const iTavernGame = exports.iTavernGame = {
         },
         Action: {
           moves: {
-            //playCard, 
             pass,
             targetPlayer
           },
@@ -233,18 +230,15 @@ const iTavernGame = exports.iTavernGame = {
     }
   }
 };
-function removeToast(_ref5, toastMessage) {
+function removeToast(_ref5, toastObject) {
   let {
     G,
-    ctx,
     playerID
   } = _ref5;
-  console.log("Removing toast: ".concat(toastMessage));
   if (G.activeToasts && G.activeToasts[playerID]) {
-    const index = G.activeToasts[playerID].indexOf(toastMessage);
+    const index = G.activeToasts[playerID].findIndex(toast => toast.id === toastObject.id);
     if (index !== -1) {
       G.activeToasts[playerID].splice(index, 1);
-      console.log("Removed toast: ".concat(toastMessage));
     }
   }
 }
@@ -495,12 +489,23 @@ function drawToMaxHandInternal(G, ctx, playerID) {
     ctx
   }, playerID);
 }
-function playCard(_ref18, cardIndex) {
+function makeToast(_ref18, message) {
+  let {
+    G,
+    playerID
+  } = _ref18;
+  G.activeToasts[playerID].push({
+    message: message,
+    id: G.toastNumber
+  });
+  G.toastNumber++;
+}
+function playCard(_ref19, cardIndex) {
   let {
     G,
     playerID,
     ctx
-  } = _ref18;
+  } = _ref19;
   let target = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
   checkPlayerValidMoves({
     G,
@@ -523,8 +528,10 @@ function playCard(_ref18, cardIndex) {
   if (cardPlayed.playType === "Heal") {
     if (target === null) {
       target = playerID;
-      console.log("Healing self");
-      G.activeToasts[playerID].push("Healing self");
+      makeToast({
+        G,
+        playerID
+      }, "Healing self, since no target was selected.");
     }
   }
   if (cardPlayed.playType === "SingleTargetAttack") {
@@ -559,24 +566,24 @@ function playCard(_ref18, cardIndex) {
     ctx
   }, playerID);
 }
-function pass(_ref19) {
+function pass(_ref20) {
   let {
     G,
     playerID,
     ctx,
     events
-  } = _ref19;
+  } = _ref20;
   if (ctx.phase === "End") {
     events.endTurn();
   }
   events.endStage();
   return;
 }
-function setupVariables(_ref20) {
+function setupVariables(_ref21) {
   let {
     G,
     ctx
-  } = _ref20;
+  } = _ref21;
   for (let i = 0; i < ctx.numPlayers; i++) {
     G.characterID[i] = "";
     G.characterShortName[i] = "";
@@ -601,17 +608,17 @@ function setupVariables(_ref20) {
     G.activeToasts[i] = [];
   }
 }
-function consume(_ref21, consumingPlayer) {
+function consume(_ref22, consumingPlayer) {
   let {
     G
-  } = _ref21;
+  } = _ref22;
   let consumedCards = [];
   consumedCards.push(G.consumeDeck[consumingPlayer].pop());
 }
-function targetPlayer(_ref22, targetPlayerID) {
+function targetPlayer(_ref23, targetPlayerID) {
   let {
     G,
     playerID
-  } = _ref22;
+  } = _ref23;
   G.targetingPlayer[playerID][targetPlayerID] = !G.targetingPlayer[playerID][targetPlayerID];
 }

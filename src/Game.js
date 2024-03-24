@@ -41,6 +41,7 @@ export const iTavernGame = {
         targetingPlayer: {},
 
         activeToasts: {},
+        toastNumber: 0,
         
         
     }),
@@ -122,7 +123,7 @@ export const iTavernGame = {
                         stopDiscarding, 
                         toggleDiscarding, 
                         pass, 
-                        //playCard,
+
                         targetPlayer,
                     },
                     
@@ -135,8 +136,6 @@ export const iTavernGame = {
                 Draw: {
                     moves: {
                         drawToMaxHand, 
-                        pass, 
-                        //playCard,
                         targetPlayer
                     },
                     next: "Action",
@@ -147,7 +146,6 @@ export const iTavernGame = {
                 },
                 Action: {
                     moves: {
-                        //playCard, 
                         pass,
                         targetPlayer,
                     },
@@ -197,13 +195,11 @@ export const iTavernGame = {
 
 }
 
-function removeToast({G, ctx, playerID}, toastMessage) {
-    console.log(`Removing toast: ${toastMessage}`);
+function removeToast({G, playerID}, toastObject) {
     if (G.activeToasts && G.activeToasts[playerID]) {
-      const index = G.activeToasts[playerID].indexOf(toastMessage);
+      const index = G.activeToasts[playerID].findIndex(toast => toast.id === toastObject.id);
       if (index !== -1) {
         G.activeToasts[playerID].splice(index, 1);
-        console.log(`Removed toast: ${toastMessage}`);
       }
     }
   }
@@ -405,6 +401,14 @@ function drawToMaxHandInternal (G, ctx, playerID) {
     checkPlayerValidMoves({G, ctx}, playerID);
 }
 
+function makeToast({G, playerID}, message) {
+    G.activeToasts[playerID].push({
+        message: message,
+        id: G.toastNumber,
+    });
+    G.toastNumber++;
+}
+
 function playCard({G, playerID, ctx}, cardIndex, target = null) {
     checkPlayerValidMoves({G, ctx}, playerID);
     let cardLegal = checkValidMove({G, playerID}, playerID, cardIndex);
@@ -424,8 +428,7 @@ function playCard({G, playerID, ctx}, cardIndex, target = null) {
     if(cardPlayed.playType === "Heal") {
         if(target === null) { 
             target = playerID;
-            console.log("Healing self");
-            G.activeToasts[playerID].push("Healing self");
+           makeToast({G, playerID}, "Healing self, since no target was selected.");
         }
     }
     if(cardPlayed.playType === "SingleTargetAttack") {
