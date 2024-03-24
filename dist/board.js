@@ -7,10 +7,10 @@ exports.TavernBoard = TavernBoard;
 exports.default = void 0;
 var _react = _interopRequireWildcard(require("react"));
 var _characters = require("./characters.js");
-var _Game = require("./Game.js");
 var _Cards = require("./Cards.js");
 var _CustomCards = require("./CustomCards.js");
 var _reactLoading = _interopRequireDefault(require("react-loading"));
+var _toaster = _interopRequireDefault(require("./toaster.js"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
 function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
@@ -24,10 +24,11 @@ function TavernBoard(props) {
     };
     checkIfGameIsLoaded();
   }, [props.G]);
+  const activeToasts = props.G.activeToasts[props.playerID];
   return /*#__PURE__*/_react.default.createElement("div", null, !isLoaded ? /*#__PURE__*/_react.default.createElement(_reactLoading.default, {
     type: "bars",
     color: "#000000"
-  }) : /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement(Header, props), props.ctx.phase === "characterSelection" && /*#__PURE__*/_react.default.createElement(CharacterSelector, props), props.ctx.phase !== "characterSelection" && /*#__PURE__*/_react.default.createElement(StatusCards, props), props.ctx.phase !== "characterSelection" && /*#__PURE__*/_react.default.createElement(Stack, props), props.ctx.phase !== "characterSelection" && /*#__PURE__*/_react.default.createElement(Hand, props)));
+  }) : /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement(Header, props), /*#__PURE__*/_react.default.createElement(_toaster.default, props), props.ctx.phase === "characterSelection" && /*#__PURE__*/_react.default.createElement(CharacterSelector, props), props.ctx.phase !== "characterSelection" && /*#__PURE__*/_react.default.createElement(StatusCards, props), props.ctx.phase !== "characterSelection" && /*#__PURE__*/_react.default.createElement(Stack, props), props.ctx.phase !== "characterSelection" && /*#__PURE__*/_react.default.createElement(Hand, props)));
 }
 function Header(_ref) {
   let {
@@ -54,18 +55,20 @@ function StatusCards(_ref2) {
   let {
     G,
     ctx,
-    moves
+    moves,
+    playerID
   } = _ref2;
   const statusCards = [];
   for (let i = 0; i < ctx.numPlayers; i++) {
     if (isNotNullOrUndefined(G.characterID[i])) {
       statusCards.push( /*#__PURE__*/_react.default.createElement(_CustomCards.StatusCard, {
+        key: i,
         name: G.characterLongName[i],
         stats: [{
-          name: 'Name',
+          name: "Name",
           value: G.characterShortName[i]
         }, {
-          name: 'Cash',
+          name: "Cash",
           value: G.cash[i]
         }],
         health: G.health[i],
@@ -83,15 +86,16 @@ function StatusCards(_ref2) {
           width: "450px",
           minHeight: "300px",
           minWidth: "450px"
-        }
+        },
+        targeted: G.targetingPlayer[playerID][i]
       }));
     }
   }
   return /*#__PURE__*/_react.default.createElement("div", {
     style: {
-      display: 'flex',
-      justifyContent: 'space-around',
-      flexWrap: 'wrap',
+      display: "flex",
+      justifyContent: "space-around",
+      flexWrap: "wrap",
       backgroundColor: "#2b2b62",
       border: "5px solid #470b78",
       marginBottom: "5px"
@@ -117,9 +121,9 @@ function Stack(_ref3) {
     }
   }, "Cards Played this Stage"), /*#__PURE__*/_react.default.createElement("div", {
     style: {
-      display: 'flex',
-      justifyContent: 'left',
-      flexWrap: 'wrap'
+      display: "flex",
+      justifyContent: "left",
+      flexWrap: "wrap"
     }
   }, G.stack.map((card, index) => /*#__PURE__*/_react.default.createElement(DisplayCardinStack, {
     index: index,
@@ -141,10 +145,10 @@ function DisplayCardinStack(_ref4) {
   } = _ref4;
   const card = _Cards.Cards.find(card => card.id === cardId);
   const liftColor = {
-    "0": "#b30b02",
-    "1": "#215212",
-    "2": "#0c07ad",
-    "3": "#ad07ac",
+    0: "#b30b02",
+    1: "#215212",
+    2: "#0c07ad",
+    3: "#ad07ac",
     default: "#07aaad"
   }[String(playedByPlayerId)];
   return /*#__PURE__*/_react.default.createElement(_CustomCards.PersonalDeckCard, {
@@ -155,16 +159,16 @@ function DisplayCardinStack(_ref4) {
       liftColor: liftColor
     },
     stats: [{
-      name: 'Playable',
+      name: "Playable",
       value: camelToSpaced(card.whenPlayable.join(", "))
     }, {
-      name: 'Type',
+      name: "Type",
       value: camelToSpaced(card.playType)
     }, {
-      name: 'Played By',
+      name: "Played By",
       value: "Player " + playedByPlayerId
     }],
-    trashing: G.discardingHand[playerID][index],
+    trashing: false,
     moves: moves,
     index: index,
     playerID: playedByPlayerId,
@@ -188,8 +192,8 @@ function Hand(_ref5) {
     }
   }, /*#__PURE__*/_react.default.createElement("div", {
     style: {
-      display: 'flex',
-      alignItems: 'center'
+      display: "flex",
+      alignItems: "center"
     }
   }, /*#__PURE__*/_react.default.createElement(PhaseButtons, {
     G: G,
@@ -198,9 +202,9 @@ function Hand(_ref5) {
     playerID: playerID
   }), /*#__PURE__*/_react.default.createElement("h1", null, "Your hand")), /*#__PURE__*/_react.default.createElement("div", {
     style: {
-      display: 'flex',
-      justifyContent: 'left',
-      flexWrap: 'wrap'
+      display: "flex",
+      justifyContent: "left",
+      flexWrap: "wrap"
     }
   }, Array.isArray(G.hand[playerID]) && G.hand[playerID].map((cardId, index) => /*#__PURE__*/_react.default.createElement(DisplayCardinHand, {
     key: index,
@@ -220,12 +224,12 @@ function PhaseButtons(_ref6) {
   } = _ref6;
   return /*#__PURE__*/_react.default.createElement("div", {
     style: {
-      display: 'flex',
-      alignItems: 'center'
+      display: "flex",
+      alignItems: "center"
     }
   }, /*#__PURE__*/_react.default.createElement("h1", {
     style: {
-      marginRight: '10px'
+      marginRight: "10px"
     }
   }, "Stage Buttons"), ctx.activePlayers[playerID] === "Discard" && G.discarding[playerID] === false && /*#__PURE__*/_react.default.createElement("button", {
     onClick: () => moves.startDiscarding()
@@ -249,8 +253,8 @@ function DisplayCardinHand(_ref7) {
   } = _ref7;
   const card = _Cards.Cards.find(card => card.id === cardId);
   const isValid = G.handValidity[playerID][index];
-  const liftColor = isValid ? '#76CC76' : '#D75265'; // replace 'green' and 'red' with actual color codes
-  const playableEmoji = isValid ? '✅' : '❌';
+  const liftColor = isValid ? "#76CC76" : "#D75265"; // replace 'green' and 'red' with actual color codes
+  const playableEmoji = isValid ? "✅" : "❌";
   return /*#__PURE__*/_react.default.createElement(_CustomCards.PersonalDeckCard, {
     float: true,
     name: card.name,
@@ -259,10 +263,10 @@ function DisplayCardinHand(_ref7) {
       liftColor: liftColor
     },
     stats: [{
-      name: 'Playable',
+      name: "Playable",
       value: playableEmoji + " " + camelToSpaced(card.whenPlayable.join(", "))
     }, {
-      name: 'Type',
+      name: "Type",
       value: camelToSpaced(card.playType)
     }],
     trashing: G.discardingHand[playerID][index],
@@ -285,6 +289,6 @@ function isNotNullOrUndefined(value) {
   return value !== null && value !== undefined;
 }
 function camelToSpaced(str) {
-  return str.replace(/([A-Z])/g, ' $1') // insert a space before all found uppercase letters
+  return str.replace(/([A-Z])/g, " $1") // insert a space before all found uppercase letters
   .trim(); // remove the leading space
 }

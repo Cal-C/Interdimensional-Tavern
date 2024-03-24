@@ -5,6 +5,8 @@ import { SocketIO } from 'boardgame.io/multiplayer';
 import {TavernBoard} from './board.js';
 //import { Card, CardWrapper } from 'react-ui-cards';
 
+
+
 // Define your game rules
 
 
@@ -37,7 +39,10 @@ function App() {
           <button onClick={() => setSelectedPlayerID('3')}>Select Player 3</button>
         </>
       ) : (
-        <GameClient playerID={selectedPlayerID} />
+        <>
+          <GameClient playerID={selectedPlayerID} />
+        </>
+        
       )}
       <br />
       <small>Coding and Game Design by Cal Crompton| Trashcan art by Ilham Fitrotul Hayat | Target by Tomas Knop</small>

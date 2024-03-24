@@ -39,6 +39,8 @@ export const iTavernGame = {
         personalDeck : {},
 
         targetingPlayer: {},
+
+        activeToasts: {},
         
         
     }),
@@ -56,7 +58,8 @@ export const iTavernGame = {
         //universal moves
         playCard,
         pass,
-        targetPlayer,    
+        targetPlayer,
+        removeToast,  
     },
 
     phases:{
@@ -194,6 +197,17 @@ export const iTavernGame = {
 
 }
 
+function removeToast({G, ctx, playerID}, toastMessage) {
+    console.log(`Removing toast: ${toastMessage}`);
+    if (G.activeToasts && G.activeToasts[playerID]) {
+      const index = G.activeToasts[playerID].indexOf(toastMessage);
+      if (index !== -1) {
+        G.activeToasts[playerID].splice(index, 1);
+        console.log(`Removed toast: ${toastMessage}`);
+      }
+    }
+  }
+
 function discardSelection({G, events, moves, ctx}, playID) {
     console.log("Discarding selection for player " + playID);
     for(let i = G.discardingHand[playID].length; i >= 0; i--) {
@@ -215,7 +229,6 @@ function discard({G}, i, playID) {
         return;
     }
     let card = G.hand[playID].splice(i, 1)[0];
-    console.log("Discarding card " + card + " for player " + playID);
     //check if card has discard effect and do it
     G.discardDeck[playID].push(card);
     G.discardingHand[playID][i] = false;
@@ -331,13 +344,6 @@ function checkValidMove({G, ctx}, playerChecked, cardChecked) {
         valid = true;
     }
 
-    if(card.cashEffect !== null && card.cashEffect !== undefined){
-        if(G.cash[playerChecked] + card.cashEffect <= 0){
-            valid = false;
-        }
-
-    }
-    console.log("Card " + card.name + " is valid: " + valid);
     G.handValidity[playerChecked][cardChecked] = valid;
     return valid;
 
@@ -346,7 +352,6 @@ function checkValidMove({G, ctx}, playerChecked, cardChecked) {
 
 
 function checkIfAllCharactersSelected({G, ctx}) {
-    console.log(JSON.stringify(G.characterID));
     let players = Object.keys(G.characterID);
     let playersWithCharacters = players.filter(player => (G.characterID[player] !== "" && G.characterID[player] !== undefined && G.characterID[player] !== null));
     console.log("Players with characters: " + playersWithCharacters.length + " Total players: " + ctx.numPlayers);
@@ -395,7 +400,6 @@ function drawToMaxHandInternal (G, ctx, playerID) {
             break;
         }
         G.hand[playerID].push(newCard);
-        console.log("Drew card " + newCard + " for player " + playerID);
     }
     console.log("Player " + playerID + " has drawn to max hand");
     checkPlayerValidMoves({G, ctx}, playerID);
@@ -418,7 +422,11 @@ function playCard({G, playerID, ctx}, cardIndex, target = null) {
     }
 
     if(cardPlayed.playType === "Heal") {
-        if(target === null) { target = playerID; }
+        if(target === null) { 
+            target = playerID;
+            console.log("Healing self");
+            G.activeToasts[playerID].push("Healing self");
+        }
     }
     if(cardPlayed.playType === "SingleTargetAttack") {
         if(target === null) { return INVALID_MOVE; }
@@ -475,6 +483,7 @@ function setupVariables({G, ctx}){
         for( let j = 0; j < ctx.numPlayers; j++){
             G.targetingPlayer[i][j] = false;
         }
+        G.activeToasts[i] = [];
     }
 }
 

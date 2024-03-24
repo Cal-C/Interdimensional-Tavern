@@ -41,7 +41,8 @@ const iTavernGame = exports.iTavernGame = {
       minDrunkenness: {},
       cash: {},
       personalDeck: {},
-      targetingPlayer: {}
+      targetingPlayer: {},
+      activeToasts: {}
     };
   },
   moves: {
@@ -56,7 +57,8 @@ const iTavernGame = exports.iTavernGame = {
     //universal moves
     playCard,
     pass,
-    targetPlayer
+    targetPlayer,
+    removeToast
   },
   phases: {
     characterSelection: {
@@ -231,13 +233,28 @@ const iTavernGame = exports.iTavernGame = {
     }
   }
 };
-function discardSelection(_ref5, playID) {
+function removeToast(_ref5, toastMessage) {
+  let {
+    G,
+    ctx,
+    playerID
+  } = _ref5;
+  console.log("Removing toast: ".concat(toastMessage));
+  if (G.activeToasts && G.activeToasts[playerID]) {
+    const index = G.activeToasts[playerID].indexOf(toastMessage);
+    if (index !== -1) {
+      G.activeToasts[playerID].splice(index, 1);
+      console.log("Removed toast: ".concat(toastMessage));
+    }
+  }
+}
+function discardSelection(_ref6, playID) {
   let {
     G,
     events,
     moves,
     ctx
-  } = _ref5;
+  } = _ref6;
   console.log("Discarding selection for player " + playID);
   for (let i = G.discardingHand[playID].length; i >= 0; i--) {
     if (G.discardingHand[playID][i]) {
@@ -252,10 +269,10 @@ function discardSelection(_ref5, playID) {
     others: 'React'
   });
 }
-function discard(_ref6, i, playID) {
+function discard(_ref7, i, playID) {
   let {
     G
-  } = _ref6;
+  } = _ref7;
   if (!G.hand[playID]) {
     console.error("Player " + playID + " has no hand");
     return;
@@ -265,23 +282,22 @@ function discard(_ref6, i, playID) {
     return;
   }
   let card = G.hand[playID].splice(i, 1)[0];
-  console.log("Discarding card " + card + " for player " + playID);
   //check if card has discard effect and do it
   G.discardDeck[playID].push(card);
   G.discardingHand[playID][i] = false;
 }
-function startDiscarding(_ref7) {
-  let {
-    G,
-    ctx
-  } = _ref7;
-  G.discarding[ctx.currentPlayer] = true;
-}
-function stopDiscarding(_ref8) {
+function startDiscarding(_ref8) {
   let {
     G,
     ctx
   } = _ref8;
+  G.discarding[ctx.currentPlayer] = true;
+}
+function stopDiscarding(_ref9) {
+  let {
+    G,
+    ctx
+  } = _ref9;
   stopDiscardingInternal(G, ctx);
 }
 function stopDiscardingInternal(G, ctx) {
@@ -291,20 +307,20 @@ function stopDiscardingInternal(G, ctx) {
     [ctx.currentPlayer]: Array(G.maxHandSize).fill(false)
   };
 }
-function toggleDiscarding(_ref9, cardIndex, playerID) {
+function toggleDiscarding(_ref10, cardIndex, playerID) {
   let {
     G,
     ctx
-  } = _ref9;
+  } = _ref10;
   G.discardingHand[playerID][cardIndex] = !G.discardingHand[playerID][cardIndex];
 }
-function chooseCharacter(_ref10, characterId) {
+function chooseCharacter(_ref11, characterId) {
   let {
     G,
     playerID,
     ctx,
     events
-  } = _ref10;
+  } = _ref11;
   if (G.characterID[playerID] !== "" && G.characterID[playerID] !== undefined && G.characterID[playerID] !== null) {
     console.log("Player " + playerID + " has already selected a character");
     return;
@@ -349,11 +365,11 @@ function chooseCharacter(_ref10, characterId) {
   console.log("Not all players have selected characters");
   events.endTurn();
 }
-function checkAllValidMoves(_ref11) {
+function checkAllValidMoves(_ref12) {
   let {
     G,
     ctx
-  } = _ref11;
+  } = _ref12;
   console.time("Validity check time taken");
   let players = Object.keys(G.hand);
   players = players.filter(player => G.characterID[player] !== "" && G.characterID[player] !== undefined && G.characterID[player] !== null);
@@ -365,11 +381,11 @@ function checkAllValidMoves(_ref11) {
   });
   console.timeEnd("Validity check time taken");
 }
-function checkPlayerValidMoves(_ref12, playerChecked) {
+function checkPlayerValidMoves(_ref13, playerChecked) {
   let {
     G,
     ctx
-  } = _ref12;
+  } = _ref13;
   let cardIndex = 0;
   if (G.hand[playerChecked]) {
     G.hand[playerChecked].forEach(card => {
@@ -381,11 +397,11 @@ function checkPlayerValidMoves(_ref12, playerChecked) {
     });
   }
 }
-function checkValidMove(_ref13, playerChecked, cardChecked) {
+function checkValidMove(_ref14, playerChecked, cardChecked) {
   let {
     G,
     ctx
-  } = _ref13;
+  } = _ref14;
   if (G.hand[playerChecked] === null) {
     console.error("Player " + playerChecked + " has no hand");
     return false;
@@ -410,31 +426,24 @@ function checkValidMove(_ref13, playerChecked, cardChecked) {
   if (card.whenPlayable.includes("Whenever")) {
     valid = true;
   }
-  if (card.cashEffect !== null && card.cashEffect !== undefined) {
-    if (G.cash[playerChecked] + card.cashEffect <= 0) {
-      valid = false;
-    }
-  }
-  console.log("Card " + card.name + " is valid: " + valid);
   G.handValidity[playerChecked][cardChecked] = valid;
   return valid;
 }
-function checkIfAllCharactersSelected(_ref14) {
+function checkIfAllCharactersSelected(_ref15) {
   let {
     G,
     ctx
-  } = _ref14;
-  console.log(JSON.stringify(G.characterID));
+  } = _ref15;
   let players = Object.keys(G.characterID);
   let playersWithCharacters = players.filter(player => G.characterID[player] !== "" && G.characterID[player] !== undefined && G.characterID[player] !== null);
   console.log("Players with characters: " + playersWithCharacters.length + " Total players: " + ctx.numPlayers);
   return playersWithCharacters.length === ctx.numPlayers;
 }
-function allPlayersDrawToMaxHand(_ref15) {
+function allPlayersDrawToMaxHand(_ref16) {
   let {
     G,
     ctx
-  } = _ref15;
+  } = _ref16;
   console.log("All players drawing to max hand " + JSON.stringify(G.characterID));
   let players = Object.keys(G.characterID);
   players.forEach(player => {
@@ -442,12 +451,12 @@ function allPlayersDrawToMaxHand(_ref15) {
     drawToMaxHandInternal(G, ctx, playerNumber);
   });
 }
-function drawToMaxHand(_ref16) {
+function drawToMaxHand(_ref17) {
   let {
     G,
     ctx,
     playerID
-  } = _ref16;
+  } = _ref17;
   drawToMaxHandInternal(G, ctx, playerID);
 }
 function drawToMaxHandInternal(G, ctx, playerID) {
@@ -479,7 +488,6 @@ function drawToMaxHandInternal(G, ctx, playerID) {
       break;
     }
     G.hand[playerID].push(newCard);
-    console.log("Drew card " + newCard + " for player " + playerID);
   }
   console.log("Player " + playerID + " has drawn to max hand");
   checkPlayerValidMoves({
@@ -487,12 +495,12 @@ function drawToMaxHandInternal(G, ctx, playerID) {
     ctx
   }, playerID);
 }
-function playCard(_ref17, cardIndex) {
+function playCard(_ref18, cardIndex) {
   let {
     G,
     playerID,
     ctx
-  } = _ref17;
+  } = _ref18;
   let target = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
   checkPlayerValidMoves({
     G,
@@ -515,6 +523,8 @@ function playCard(_ref17, cardIndex) {
   if (cardPlayed.playType === "Heal") {
     if (target === null) {
       target = playerID;
+      console.log("Healing self");
+      G.activeToasts[playerID].push("Healing self");
     }
   }
   if (cardPlayed.playType === "SingleTargetAttack") {
@@ -549,24 +559,24 @@ function playCard(_ref17, cardIndex) {
     ctx
   }, playerID);
 }
-function pass(_ref18) {
+function pass(_ref19) {
   let {
     G,
     playerID,
     ctx,
     events
-  } = _ref18;
+  } = _ref19;
   if (ctx.phase === "End") {
     events.endTurn();
   }
   events.endStage();
   return;
 }
-function setupVariables(_ref19) {
+function setupVariables(_ref20) {
   let {
     G,
     ctx
-  } = _ref19;
+  } = _ref20;
   for (let i = 0; i < ctx.numPlayers; i++) {
     G.characterID[i] = "";
     G.characterShortName[i] = "";
@@ -588,19 +598,20 @@ function setupVariables(_ref19) {
     for (let j = 0; j < ctx.numPlayers; j++) {
       G.targetingPlayer[i][j] = false;
     }
+    G.activeToasts[i] = [];
   }
 }
-function consume(_ref20, consumingPlayer) {
+function consume(_ref21, consumingPlayer) {
   let {
     G
-  } = _ref20;
+  } = _ref21;
   let consumedCards = [];
   consumedCards.push(G.consumeDeck[consumingPlayer].pop());
 }
-function targetPlayer(_ref21, targetPlayerID) {
+function targetPlayer(_ref22, targetPlayerID) {
   let {
     G,
     playerID
-  } = _ref21;
+  } = _ref22;
   G.targetingPlayer[playerID][targetPlayerID] = !G.targetingPlayer[playerID][targetPlayerID];
 }

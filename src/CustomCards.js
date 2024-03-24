@@ -46,21 +46,6 @@ const StatusCard = (props) => {
   } = props;
 
   const onClick = () => {
-    if(stats[0].value){
-      console.log(
-        "Status Card " +
-        stats[0].value +
-          " clicked. With ID " + playerID
-      );
-    }
-    else{
-      console.log(
-        "StatusCard " +
-          stats[0].value +
-          " clicked. With ID " + playerID
-      );
-    }
-    
     moves.targetPlayer(playerID);
   };
 

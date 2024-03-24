@@ -8,6 +8,7 @@ var _react = _interopRequireDefault(require("react"));
 var _reactTextfit = require("react-textfit");
 var _tonychris = _interopRequireDefault(require("./images/tonychris.jpg"));
 var _trashcan = _interopRequireDefault(require("./images/trashcan.png"));
+var _target = _interopRequireDefault(require("./images/target.png"));
 require("./CustomCards.css");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 const CardBox = _ref => {
@@ -48,14 +49,10 @@ const StatusCard = props => {
     ctx,
     Colors,
     playerID,
-    moves
+    moves,
+    targeted
   } = props;
   const onClick = () => {
-    if (stats[0].value) {
-      console.log("Status Card " + stats[0].value + " clicked. With ID " + playerID);
-    } else {
-      console.log("StatusCard " + stats[0].value + " clicked. With ID " + playerID);
-    }
     moves.targetPlayer(playerID);
   };
   let healthBarStatsLoaded = false;
@@ -82,7 +79,22 @@ const StatusCard = props => {
     },
     hoverColor: liftColor,
     onClick: onClick
-  }, /*#__PURE__*/_react.default.createElement("div", {
+  }, targeted && /*#__PURE__*/_react.default.createElement("img", {
+    src: _target.default,
+    alt: "Target",
+    style: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      width: "100%",
+      height: "100%",
+      objectFit: "contain",
+      margin: "auto",
+      opacity: 0.8
+    }
+  }), /*#__PURE__*/_react.default.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",

@@ -44,8 +44,8 @@ function App() {
     onClick: () => setSelectedPlayerID('2')
   }, "Select Player 2"), /*#__PURE__*/_react.default.createElement("button", {
     onClick: () => setSelectedPlayerID('3')
-  }, "Select Player 3")) : /*#__PURE__*/_react.default.createElement(GameClient, {
+  }, "Select Player 3")) : /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement(GameClient, {
     playerID: selectedPlayerID
-  }), /*#__PURE__*/_react.default.createElement("br", null), /*#__PURE__*/_react.default.createElement("small", null, "Coding and Game Design by Cal Crompton| Trashcan art by Ilham Fitrotul Hayat | Target by Tomas Knop"));
+  })), /*#__PURE__*/_react.default.createElement("br", null), /*#__PURE__*/_react.default.createElement("small", null, "Coding and Game Design by Cal Crompton| Trashcan art by Ilham Fitrotul Hayat | Target by Tomas Knop"));
 }
 var _default = exports.default = App;
