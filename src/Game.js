@@ -324,15 +324,19 @@ function checkValidMove({G, ctx}, playerChecked, cardChecked) {
         return valid;
     }
     if(card.whenPlayable.includes("Action")) {
-       if(ctx.activePlayers){
+       if(ctx && ctx.activePlayers){
         if(ctx.activePlayers[playerChecked]){
             if(ctx.activePlayers[playerChecked] === "Action") {
                 valid = true;
             }
          }
+
        }
        else {
               console.error("Active players not found"); //this is expected to happen during setup, but should not happen after the first draw stage.
+              if(!ctx) {
+                  console.error("Ctx not found");
+              }
          }
     }
         
@@ -354,20 +358,20 @@ function checkIfAllCharactersSelected({G, ctx}) {
     return playersWithCharacters.length === ctx.numPlayers;
 }
 
-function allPlayersDrawToMaxHand({G, ctx}) {
+function allPlayersDrawToMaxHand({G, ctx, events}) {
     console.log("All players drawing to max hand " + JSON.stringify(G.characterID));
     let players = Object.keys(G.characterID);
     players.forEach(player => {
         let playerNumber = parseInt(player);
-        drawToMaxHandInternal(G, ctx, playerNumber);
+        drawToMaxHandInternal(G, ctx, playerNumber, events, false);
     });
 }
 
-function drawToMaxHand({G, ctx, playerID}) {
-    drawToMaxHandInternal(G, ctx, playerID);
+function drawToMaxHand({G, ctx, playerID, events}) {
+    drawToMaxHandInternal(G, ctx, playerID, events, true);
 }
 
-function drawToMaxHandInternal (G, ctx, playerID) {
+function drawToMaxHandInternal (G, ctx, playerID, events, setPhase = true) {
     if (!G) {
         console.error('G is undefined');
         return;
@@ -399,6 +403,9 @@ function drawToMaxHandInternal (G, ctx, playerID) {
     }
     console.log("Player " + playerID + " has drawn to max hand");
     checkPlayerValidMoves({G, ctx}, playerID);
+    if(setPhase) {
+    events.setActivePlayers({ currentPlayer: 'Action', others: 'React' });
+    }
 }
 
 function makeToast({G}, forPlayer , message, type = "default") {
@@ -419,14 +426,16 @@ function determineTargetedPlayers({G}, checkingPlayer) {
     return players;
 }
 
-function playCard({G, playerID, ctx}, cardIndex, targets = null) {
+function playCard({G, playerID, ctx, events}, cardIndex, targets = null) {
     checkPlayerValidMoves({G, ctx}, playerID);
     let healed = 0;
-    let cardLegal = checkValidMove({G, playerID}, playerID, cardIndex);
+    let cardLegal = checkValidMove({G, ctx}, playerID, cardIndex);
     targets = determineTargetedPlayers({G}, playerID);
 
     let card = G.hand[playerID].splice(cardIndex, 1);
     let cardPlayed = Cards.find(c => c.id === card[0]);
+
+
     if(cardPlayed === undefined) {
         console.log("Card not found" + card);
         return INVALID_MOVE;
@@ -442,15 +451,18 @@ function playCard({G, playerID, ctx}, cardIndex, targets = null) {
             targets[0] = playerID;
            makeToast({G}, targets[0],"Healing self, since no target was selected.", "warn");
         }
+        //eventually add a check if player is healing another player, and if so ask for confirmation
     }
     if(cardPlayed.playType === "SingleTargetAttack") {
         if(targets.length === 0) { 
-            makeToast({G}, playerID, "No target selected for single target attack.", "warn");
-            return INVALID_MOVE; 
+            targets[0] = Object.keys(ctx.playOrder).filter(player => player !== playerID)[0];            
+            makeToast({G}, playerID, "No target selected for single target attack so attacking the random opponent player "+ targets[0], "warn");
+             
         }
         if(targets.length > 1) {
-            makeToast({G}, playerID, "Too many targets selected for single target attack.", "warn");
-            return INVALID_MOVE;
+            targets = [];
+            targets[0] = Object.keys(ctx.playOrder).filter(player => player !== playerID)[0];  
+            makeToast({G}, playerID, "Too many targets selected for single target attack so attacking the random opponent player "+ targets[0], "warn");
         }
         //eventually add a check if player is hitting themselves, and if so ask for confirmation
     }
@@ -458,14 +470,12 @@ function playCard({G, playerID, ctx}, cardIndex, targets = null) {
         for(let target of targets) {
             G.drunkenness[target] += cardPlayed.drunkennessEffect;
         }
-        healed -= cardPlayed.drunkennessEffect;
     }
         
     if(cardPlayed.healthEffect){
         for(let target of targets) {
             G.health[target] += cardPlayed.healthEffect
         }
-        healed += cardPlayed.healthEffect;
     };
 
     for(let target of targets) {
@@ -485,8 +495,14 @@ function playCard({G, playerID, ctx}, cardIndex, targets = null) {
         G.cash[playerID] += cardPlayed.cashCost;
         //check if player has gone broke once that function is implemented
     }
+
+    if(cardPlayed.whenPlayable.includes("Action")) {
+        events.setActivePlayers({ currentPlayer: 'Buy', others: 'React' });
+    }
     G.stack.push({cardId: card[0], playedByPlayerId: playerID});
     console.log("Player " + playerID + " played card " + card[0]);
+
+    
 
     checkPlayerValidMoves({G, ctx}, playerID);
 }

@@ -407,7 +407,7 @@ function checkValidMove(_ref14, playerChecked, cardChecked) {
     return valid;
   }
   if (card.whenPlayable.includes("Action")) {
-    if (ctx.activePlayers) {
+    if (ctx && ctx.activePlayers) {
       if (ctx.activePlayers[playerChecked]) {
         if (ctx.activePlayers[playerChecked] === "Action") {
           valid = true;
@@ -415,6 +415,9 @@ function checkValidMove(_ref14, playerChecked, cardChecked) {
       }
     } else {
       console.error("Active players not found"); //this is expected to happen during setup, but should not happen after the first draw stage.
+      if (!ctx) {
+        console.error("Ctx not found");
+      }
     }
   }
   if (card.whenPlayable.includes("Whenever")) {
@@ -436,24 +439,27 @@ function checkIfAllCharactersSelected(_ref15) {
 function allPlayersDrawToMaxHand(_ref16) {
   let {
     G,
-    ctx
+    ctx,
+    events
   } = _ref16;
   console.log("All players drawing to max hand " + JSON.stringify(G.characterID));
   let players = Object.keys(G.characterID);
   players.forEach(player => {
     let playerNumber = parseInt(player);
-    drawToMaxHandInternal(G, ctx, playerNumber);
+    drawToMaxHandInternal(G, ctx, playerNumber, events, false);
   });
 }
 function drawToMaxHand(_ref17) {
   let {
     G,
     ctx,
-    playerID
+    playerID,
+    events
   } = _ref17;
-  drawToMaxHandInternal(G, ctx, playerID);
+  drawToMaxHandInternal(G, ctx, playerID, events, true);
 }
-function drawToMaxHandInternal(G, ctx, playerID) {
+function drawToMaxHandInternal(G, ctx, playerID, events) {
+  let setPhase = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : true;
   if (!G) {
     console.error('G is undefined');
     return;
@@ -488,6 +494,12 @@ function drawToMaxHandInternal(G, ctx, playerID) {
     G,
     ctx
   }, playerID);
+  if (setPhase) {
+    events.setActivePlayers({
+      currentPlayer: 'Action',
+      others: 'React'
+    });
+  }
 }
 function makeToast(_ref18, forPlayer, message) {
   let {
@@ -516,7 +528,8 @@ function playCard(_ref20, cardIndex) {
   let {
     G,
     playerID,
-    ctx
+    ctx,
+    events
   } = _ref20;
   let targets = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
   checkPlayerValidMoves({
@@ -526,7 +539,7 @@ function playCard(_ref20, cardIndex) {
   let healed = 0;
   let cardLegal = checkValidMove({
     G,
-    playerID
+    ctx
   }, playerID, cardIndex);
   targets = determineTargetedPlayers({
     G
@@ -551,16 +564,17 @@ function playCard(_ref20, cardIndex) {
   }
   if (cardPlayed.playType === "SingleTargetAttack") {
     if (targets.length === 0) {
+      targets[0] = Object.keys(ctx.playOrder).filter(player => player !== playerID)[0];
       makeToast({
         G
-      }, playerID, "No target selected for single target attack.", "warn");
-      return _core.INVALID_MOVE;
+      }, playerID, "No target selected for single target attack so attacking the random opponent player " + targets[0], "warn");
     }
     if (targets.length > 1) {
+      targets = [];
+      targets[0] = Object.keys(ctx.playOrder).filter(player => player !== playerID)[0];
       makeToast({
         G
-      }, playerID, "Too many targets selected for single target attack.", "warn");
-      return _core.INVALID_MOVE;
+      }, playerID, "Too many targets selected for single target attack so attacking the random opponent player " + targets[0], "warn");
     }
     //eventually add a check if player is hitting themselves, and if so ask for confirmation
   }
@@ -568,13 +582,11 @@ function playCard(_ref20, cardIndex) {
     for (let target of targets) {
       G.drunkenness[target] += cardPlayed.drunkennessEffect;
     }
-    healed -= cardPlayed.drunkennessEffect;
   }
   if (cardPlayed.healthEffect) {
     for (let target of targets) {
       G.health[target] += cardPlayed.healthEffect;
     }
-    healed += cardPlayed.healthEffect;
   }
   ;
   for (let target of targets) {
@@ -593,6 +605,12 @@ function playCard(_ref20, cardIndex) {
   if (cardPlayed.cashCost) {
     G.cash[playerID] += cardPlayed.cashCost;
     //check if player has gone broke once that function is implemented
+  }
+  if (cardPlayed.whenPlayable.includes("Action")) {
+    events.setActivePlayers({
+      currentPlayer: 'Buy',
+      others: 'React'
+    });
   }
   G.stack.push({
     cardId: card[0],
