@@ -413,10 +413,17 @@ function makeToast({G}, forPlayer , message, type = "default") {
     G.toastNumber++;
 }
 
-function playCard({G, playerID, ctx}, cardIndex, target = null) {
+function determineTargetedPlayers({G}, checkingPlayer) {
+    let players = G.targetingPlayer[checkingPlayer];
+    players = Object.keys(players).filter(player => players[player] === true);
+    return players;
+}
+
+function playCard({G, playerID, ctx}, cardIndex, targets = null) {
     checkPlayerValidMoves({G, ctx}, playerID);
     let healed = 0;
     let cardLegal = checkValidMove({G, playerID}, playerID, cardIndex);
+    targets = determineTargetedPlayers({G}, playerID);
 
     let card = G.hand[playerID].splice(cardIndex, 1);
     let cardPlayed = Cards.find(c => c.id === card[0]);
@@ -431,31 +438,48 @@ function playCard({G, playerID, ctx}, cardIndex, target = null) {
     }
 
     if(cardPlayed.playType === "Heal") {
-        if(target === null) { 
-            target = playerID;
-           makeToast({G}, target,"Healing self, since no target was selected.", "warn");
+        if(targets.length === 0) { 
+            targets[0] = playerID;
+           makeToast({G}, targets[0],"Healing self, since no target was selected.", "warn");
         }
     }
     if(cardPlayed.playType === "SingleTargetAttack") {
-        if(target === null) { return INVALID_MOVE; }
+        if(targets.length === 0) { 
+            makeToast({G}, playerID, "No target selected for single target attack.", "warn");
+            return INVALID_MOVE; 
+        }
+        if(targets.length > 1) {
+            makeToast({G}, playerID, "Too many targets selected for single target attack.", "warn");
+            return INVALID_MOVE;
+        }
+        //eventually add a check if player is hitting themselves, and if so ask for confirmation
     }
     if(cardPlayed.drunkennessEffect){
-        G.drunkenness[target] += cardPlayed.drunkennessEffect;
+        for(let target of targets) {
+            G.drunkenness[target] += cardPlayed.drunkennessEffect;
+        }
         healed -= cardPlayed.drunkennessEffect;
     }
         
     if(cardPlayed.healthEffect){
-        G.health[target] += cardPlayed.healthEffect
+        for(let target of targets) {
+            G.health[target] += cardPlayed.healthEffect
+        }
         healed += cardPlayed.healthEffect;
     };
 
-
-    if(G.health[target] > G.maxHealth[target]) {
-        G.health[target] = G.maxHealth[target];
+    for(let target of targets) {
+        if(G.health[target] <= 0) {
+            makeToast({G}, playerID, "Player " + target + " has been defeated.", "warn");
+        }
+        if(G.health[target] > G.maxHealth[target]) {
+            G.health[target] = G.maxHealth[target];
+        }
+        if(G.drunkenness[target] < G.minDrunkenness[target]) {
+            G.drunkenness[target] = G.minDrunkenness[target];
+        }
     }
-    if(G.drunkenness[target] < G.minDrunkenness[target]) {
-        G.drunkenness[target] = G.minDrunkenness[target];
-    }
+    
 
     if(cardPlayed.cashCost) {
         G.cash[playerID] += cardPlayed.cashCost;
@@ -463,9 +487,7 @@ function playCard({G, playerID, ctx}, cardIndex, target = null) {
     }
     G.stack.push({cardId: card[0], playedByPlayerId: playerID});
     console.log("Player " + playerID + " played card " + card[0]);
-    if(healed > 0) {
-        makeToast({G}, target , "Healed for " + healed, "success");
-    }
+
     checkPlayerValidMoves({G, ctx}, playerID);
 }
 

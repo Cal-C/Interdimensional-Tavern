@@ -45,10 +45,6 @@ function Toaster(props) {
             toastType = _reactToastify.toast.warn;
             autoCloseTimeMS = 10000;
             break;
-          case 'healed for':
-            toastType = _reactToastify.toast.success;
-            iconVar = "🩹";
-            break;
           default:
             toastType = _reactToastify.toast;
         }
@@ -59,19 +55,13 @@ function Toaster(props) {
           closeOnClick: true,
           theme: 'colored',
           transition: _reactToastify.Bounce,
-          icon: "🍺",
           onClose: () => {
             console.log("Toast with ID ".concat(toastObj.id, " , ").concat(iconVar, " and ").concat(toastObj.type, " has been closed."));
             // Call the move function to remove the toast
             moves.removeToast(toastObj);
           }
         };
-        if (iconVar !== "") {
-          toastOptions.icon = iconVar;
-          console.log("icon is " + iconVar + " for toast " + toastObj.message);
-        }
         toastType(toastObj.message, toastOptions);
-        console.log("toasting " + toastObj.message);
       }
     });
 

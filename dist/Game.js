@@ -504,13 +504,21 @@ function makeToast(_ref18, forPlayer, message) {
   });
   G.toastNumber++;
 }
-function playCard(_ref19, cardIndex) {
+function determineTargetedPlayers(_ref19, checkingPlayer) {
+  let {
+    G
+  } = _ref19;
+  let players = G.targetingPlayer[checkingPlayer];
+  players = Object.keys(players).filter(player => players[player] === true);
+  return players;
+}
+function playCard(_ref20, cardIndex) {
   let {
     G,
     playerID,
     ctx
-  } = _ref19;
-  let target = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+  } = _ref20;
+  let targets = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
   checkPlayerValidMoves({
     G,
     ctx
@@ -520,6 +528,9 @@ function playCard(_ref19, cardIndex) {
     G,
     playerID
   }, playerID, cardIndex);
+  targets = determineTargetedPlayers({
+    G
+  }, playerID);
   let card = G.hand[playerID].splice(cardIndex, 1);
   let cardPlayed = _Cards.Cards.find(c => c.id === card[0]);
   if (cardPlayed === undefined) {
@@ -531,32 +542,53 @@ function playCard(_ref19, cardIndex) {
     return _core.INVALID_MOVE;
   }
   if (cardPlayed.playType === "Heal") {
-    if (target === null) {
-      target = playerID;
+    if (targets.length === 0) {
+      targets[0] = playerID;
       makeToast({
         G
-      }, target, "Healing self, since no target was selected.", "warn");
+      }, targets[0], "Healing self, since no target was selected.", "warn");
     }
   }
   if (cardPlayed.playType === "SingleTargetAttack") {
-    if (target === null) {
+    if (targets.length === 0) {
+      makeToast({
+        G
+      }, playerID, "No target selected for single target attack.", "warn");
       return _core.INVALID_MOVE;
     }
+    if (targets.length > 1) {
+      makeToast({
+        G
+      }, playerID, "Too many targets selected for single target attack.", "warn");
+      return _core.INVALID_MOVE;
+    }
+    //eventually add a check if player is hitting themselves, and if so ask for confirmation
   }
   if (cardPlayed.drunkennessEffect) {
-    G.drunkenness[target] += cardPlayed.drunkennessEffect;
+    for (let target of targets) {
+      G.drunkenness[target] += cardPlayed.drunkennessEffect;
+    }
     healed -= cardPlayed.drunkennessEffect;
   }
   if (cardPlayed.healthEffect) {
-    G.health[target] += cardPlayed.healthEffect;
+    for (let target of targets) {
+      G.health[target] += cardPlayed.healthEffect;
+    }
     healed += cardPlayed.healthEffect;
   }
   ;
-  if (G.health[target] > G.maxHealth[target]) {
-    G.health[target] = G.maxHealth[target];
-  }
-  if (G.drunkenness[target] < G.minDrunkenness[target]) {
-    G.drunkenness[target] = G.minDrunkenness[target];
+  for (let target of targets) {
+    if (G.health[target] <= 0) {
+      makeToast({
+        G
+      }, playerID, "Player " + target + " has been defeated.", "warn");
+    }
+    if (G.health[target] > G.maxHealth[target]) {
+      G.health[target] = G.maxHealth[target];
+    }
+    if (G.drunkenness[target] < G.minDrunkenness[target]) {
+      G.drunkenness[target] = G.minDrunkenness[target];
+    }
   }
   if (cardPlayed.cashCost) {
     G.cash[playerID] += cardPlayed.cashCost;
@@ -567,34 +599,29 @@ function playCard(_ref19, cardIndex) {
     playedByPlayerId: playerID
   });
   console.log("Player " + playerID + " played card " + card[0]);
-  if (healed > 0) {
-    makeToast({
-      G
-    }, target, "Healed for " + healed, "healed for");
-  }
   checkPlayerValidMoves({
     G,
     ctx
   }, playerID);
 }
-function pass(_ref20) {
+function pass(_ref21) {
   let {
     G,
     playerID,
     ctx,
     events
-  } = _ref20;
+  } = _ref21;
   if (ctx.phase === "End") {
     events.endTurn();
   }
   events.endStage();
   return;
 }
-function setupVariables(_ref21) {
+function setupVariables(_ref22) {
   let {
     G,
     ctx
-  } = _ref21;
+  } = _ref22;
   for (let i = 0; i < ctx.numPlayers; i++) {
     G.characterID[i] = "";
     G.characterShortName[i] = "";
@@ -619,17 +646,17 @@ function setupVariables(_ref21) {
     G.activeToasts[i] = [];
   }
 }
-function consume(_ref22, consumingPlayer) {
+function consume(_ref23, consumingPlayer) {
   let {
     G
-  } = _ref22;
+  } = _ref23;
   let consumedCards = [];
   consumedCards.push(G.consumeDeck[consumingPlayer].pop());
 }
-function targetPlayer(_ref23, targetPlayerID) {
+function targetPlayer(_ref24, targetPlayerID) {
   let {
     G,
     playerID
-  } = _ref23;
+  } = _ref24;
   G.targetingPlayer[playerID][targetPlayerID] = !G.targetingPlayer[playerID][targetPlayerID];
 }
